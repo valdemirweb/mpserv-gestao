@@ -56,7 +56,7 @@
                 </div>
                 <div>
                     <h1 class="text-lg font-bold text-white tracking-wide">MPServ Gestão à Vista</h1>
-                    <p class="text-xs text-slate-400">Controle Operacional de Plantões, Jornada e Folgas</p>
+                    <p class="text-xs text-slate-400">Controle Operacional (Jornada 08h às 17h c/ Almoço)</p>
                 </div>
             </div>
             <div class="flex items-center gap-3">
@@ -89,7 +89,7 @@
             </div>
             <div class="px-4 py-2 text-xs text-slate-400 flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                Sincronizado com Google Sheets
+                Sincronizado com Google Sheets (Desconto 1h Almoço Aplicado)
             </div>
         </div>
 
@@ -99,7 +99,7 @@
             <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 relative overflow-hidden shadow-xl">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-400">Total de Horas no Mês</p>
+                        <p class="text-sm font-medium text-slate-400">Total de Horas Líquidas</p>
                         <h3 id="card-total-horas" class="text-3xl font-extrabold text-white mt-1">0h</h3>
                     </div>
                     <div class="bg-blue-500/10 p-3 rounded-xl text-blue-400 border border-blue-500/20 flex items-center justify-center w-12 h-12">
@@ -107,7 +107,7 @@
                     </div>
                 </div>
                 <div class="mt-4 flex items-center gap-2 text-xs text-slate-400">
-                    <span class="text-blue-400 font-semibold" id="card-total-plantoes">0</span> plantões válidos (já abatidas as folgas)
+                    <span class="text-blue-400 font-semibold" id="card-total-plantoes">0</span> plantões válidos (já descontado 1h de almoço)
                 </div>
             </div>
 
@@ -139,19 +139,19 @@
                     </div>
                 </div>
                 <div class="mt-4 text-xs text-slate-400" id="card-status-desc">
-                    Jornada compensada corretamente
+                    Jornada de 08h às 17h (8h líquidas/dia)
                 </div>
             </div>
         </div>
 
-        <!-- NOVO: Seção de Rastreabilidade de Extras x Folgas para Questionamentos -->
+        <!-- Seção de Rastreabilidade de Extras x Folgas para Questionamentos -->
         <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
                 <div>
                     <h3 class="text-base font-bold text-white flex items-center gap-2">
                         <i class="fa-solid fa-calendar-check text-purple-400"></i> Rastreabilidade de Horas Extras e Folgas Correspondentes
                     </h3>
-                    <p class="text-xs text-slate-400">Tabela de conferência simples para tirar qualquer dúvida do funcionário sobre dias trabalhados a mais e suas respectivas folgas.</p>
+                    <p class="text-xs text-slate-400">Tabela de conferência simples para tirar qualquer dúvida do funcionário sobre dias trabalhados e folgas (Turno: 08h às 17h c/ 1h de almoço).</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <select id="select-filtro-rastreio" onchange="renderizarTabelaRastreio()" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
@@ -167,8 +167,8 @@
                     <thead>
                         <tr class="border-b border-slate-800 text-slate-400 uppercase bg-slate-950/40">
                             <th class="py-3 px-4">Funcionário</th>
-                            <th class="py-3 px-4">Data da Hora Extra (Trabalhado)</th>
-                            <th class="py-3 px-4">Data da Folga Correspondente</th>
+                            <th class="py-3 px-4">Data da Hora Extra (8h líquidas)</th>
+                            <th class="py-3 px-4">Data da Folga Referente</th>
                             <th class="py-3 px-4">Status da Compensação</th>
                             <th class="py-3 px-4">Observação / Justificativa</th>
                         </tr>
@@ -190,7 +190,7 @@
                         </h3>
                         <span id="badge-semana-status" class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Normal</span>
                     </div>
-                    <p class="text-sm text-slate-400 mb-6">Acompanhamento do limite legal de 44h semanais com desconto automático de folgas e compensações.</p>
+                    <p class="text-sm text-slate-400 mb-6">Acompanhamento do teto de 44h semanais considerando o horário padrão de 08h às 17h (com 1h de almoço deduzida).</p>
                     
                     <div class="space-y-2">
                         <div class="flex justify-between text-xs font-semibold text-slate-300">
@@ -252,7 +252,7 @@
             <div class="p-6 border-b border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                 <div>
                     <h3 class="text-lg font-bold text-white">Histórico de Plantões e Observações</h3>
-                    <p class="text-xs text-slate-400">Registros enviados via formulário pelos operadores</p>
+                    <p class="text-xs text-slate-400">Registros enviados via formulário (com desconto automático de 1h de almoço em jornadas completas)</p>
                 </div>
                 <div class="flex items-center gap-3">
                     <div class="relative">
@@ -267,7 +267,7 @@
                         <tr class="border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase bg-slate-950/40">
                             <th class="py-3.5 px-6">Funcionário</th>
                             <th class="py-3.5 px-6">Data</th>
-                            <th class="py-3.5 px-6">Horas / Impacto</th>
+                            <th class="py-3.5 px-6">Horas Líquidas (c/ Almoço)</th>
                             <th class="py-3.5 px-6">Valor Líquido</th>
                             <th class="py-3.5 px-6">Observações do Sistema</th>
                             <th class="py-3.5 px-6 text-right">Ações</th>
@@ -298,14 +298,14 @@
         let plantoes = [];
         let abaAtual = 'geral';
 
-        // Lista fixa de pares de compensação conhecidos para auditoria rápida com o funcionário
+        // Lista de compensações cadastradas para esclarecimento aos funcionários
         const compensacoesCadastradas = [
             {
                 funcionario: "Jefferson",
                 dataExtra: "03/10/2026",
                 dataFolga: "06/10/2026",
                 status: "Compensado",
-                obs: "Folga compensatória referente ao plantão extra realizado no sábado (03/10)"
+                obs: "Turno 08h às 17h (8h líquidas trabalhadas após dedução de 1h de almoço)"
             }
         ];
 
@@ -350,14 +350,17 @@
                     }
 
                     let horasBrutas = parseFloat(item.horas) || 0;
+                    // Se o funcionário trabalhou o turno completo de 9h (08h às 17h), desconta 1h de almoço automaticamente, caso venha bruto sem o desconto
+                    let horasLiquidas = horasBrutas >= 9 ? horasBrutas - 1 : horasBrutas;
+
                     let obsTexto = (item.observacao || '').toLowerCase();
                     
                     return {
                         id: index + 1,
                         funcionario: item.funcionario || 'Não identificado',
                         data: dataFormatada || '2026-10-05',
-                        horas: horasBrutas,
-                        obs: item.observacao || 'Registrado via formulário',
+                        horas: horasLiquidas,
+                        obs: item.observacao ? `${item.observacao} (Almoço deduzido)` : 'Turno 08h às 17h (1h de almoço deduzida)',
                         ehFolga: obsTexto.includes('folga') || obsTexto.includes('compensação')
                     };
                 }).filter(p => p.horas !== 0 || p.ehFolga);
@@ -419,7 +422,7 @@
                 statusLimite.className = "text-xl font-bold text-emerald-400 mt-1";
                 statusIcon.className = "bg-emerald-500/10 p-3 rounded-xl text-emerald-400 border border-emerald-500/20 flex items-center justify-center w-12 h-12";
                 statusIcon.innerHTML = '<i class="fa-solid fa-shield text-lg"></i>';
-                statusDesc.innerText = "Jornada compensada corretamente";
+                statusDesc.innerText = "Jornada regular c/ 1h de almoço";
                 badgeSemana.className = "px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
                 badgeSemana.innerText = "Normal";
 
@@ -427,7 +430,7 @@
                 alertaIcon.className = "text-emerald-400 text-lg mt-0.5";
                 alertaIcon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
                 alertaTitulo.innerText = "Jornada Regular / Compensada";
-                alertaTexto.innerText = "Folgas registradas e abatidas adequadamente, garantindo transparência total com o colaborador.";
+                alertaTexto.innerText = "Intervalo de 1h de almoço descontado corretamente em conformidade com as regras trabalhistas.";
             } else {
                 barra.className = "bg-amber-500 h-full rounded-full transition-all duration-500";
                 statusLimite.innerText = "Atenção (Hora Extra)";
@@ -442,7 +445,7 @@
                 alertaIcon.className = "text-amber-400 text-lg mt-0.5";
                 alertaIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
                 alertaTitulo.innerText = `Excedente Líquido de ${horasExtras}h Detectado`;
-                alertaTexto.innerText = "Ultrapassou o limite legal. Utilize a decisão ao lado para optar entre pagamento ou folga.";
+                alertaTexto.innerText = "Ultrapassou o teto semanal após deduções. Utilize a decisão ao lado para optar entre pagamento ou folga.";
             }
 
             renderizarTabela(plantoesFiltrados);
@@ -476,7 +479,7 @@
                     <td class="py-4 px-6 text-slate-300">${formatarData(p.data)}</td>
                     <td class="py-4 px-6 text-slate-300 font-medium">${p.horas}h</td>
                     <td class="py-4 px-6 text-emerald-400 font-semibold">R$ ${valorTotal.toFixed(2).replace('.', ',')}</td>
-                    <td class="py-4 px-6 text-slate-400 text-xs italic">${p.obs || 'Nenhuma observação'}</td>
+                    <td class="py-4 px-6 text-slate-400 text-xs italic">${p.obs}</td>
                     <td class="py-4 px-6 text-right">
                         <span class="text-xs text-slate-500"><i class="fa-solid fa-check text-emerald-500 mr-1"></i> Sincronizado</span>
                     </td>
@@ -507,7 +510,7 @@
                         <span class="w-2 h-2 rounded-full ${c.funcionario.toLowerCase() === 'pierre' ? 'bg-blue-500' : 'bg-purple-500'}"></span>
                         ${c.funcionario}
                     </td>
-                    <td class="py-3 px-4 text-amber-400 font-medium"><i class="fa-solid fa-clock-rotate-left mr-1"></i> ${c.dataExtra} (Extra Realizada)</td>
+                    <td class="py-3 px-4 text-amber-400 font-medium"><i class="fa-solid fa-clock-rotate-left mr-1"></i> ${c.dataExtra} (8h líquidas)</td>
                     <td class="py-3 px-4 text-purple-400 font-medium"><i class="fa-solid fa-mug-hot mr-1"></i> ${c.dataFolga} (Folga Gozada)</td>
                     <td class="py-3 px-4">
                         <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">${c.status}</span>
