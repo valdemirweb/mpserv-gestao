@@ -27,6 +27,26 @@
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col">
 
+    <!-- Tela de Bloqueio por Senha -->
+    <div id="modal-senha" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 max-w-md w-full shadow-2xl text-center space-y-6">
+            <div class="bg-blue-600/20 border border-blue-500/30 w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-blue-400 text-2xl">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-bold text-white">Acesso Restrito - MPServ</h2>
+                <p class="text-xs text-slate-400 mt-1">Insira a senha de administração para visualizar o painel.</p>
+            </div>
+            <div class="space-y-3">
+                <input type="password" id="input-senha" placeholder="Digite a senha..." onkeypress="if(event.key === 'Enter') verificarSenha()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 text-center tracking-widest">
+                <button onclick="verificarSenha()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-xl text-sm transition-all shadow-md">
+                    Entrar no Painel
+                </button>
+            </div>
+            <p id="erro-senha" class="text-xs text-rose-400 hidden">Senha incorreta. Tente novamente.</p>
+        </div>
+    </div>
+
     <!-- Header / Navbar -->
     <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-30 shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
@@ -124,9 +144,8 @@
             </div>
         </div>
 
-        <!-- Seção de Alerta e Limite Semanal (Gestão à Vista) -->
+        <!-- Seção de Alerta e Limite Semanal -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Barra de Progresso e Alerta -->
             <div class="lg:col-span-2 bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-3">
@@ -137,7 +156,6 @@
                     </div>
                     <p class="text-sm text-slate-400 mb-6">Acompanhamento do limite legal de 44h semanais para tomada de decisão prévia.</p>
                     
-                    <!-- Barra visual -->
                     <div class="space-y-2">
                         <div class="flex justify-between text-xs font-semibold text-slate-300">
                             <span>0h</span>
@@ -150,7 +168,6 @@
                     </div>
                 </div>
 
-                <!-- Box de Orientação de Gestão -->
                 <div id="alerta-excedente-box" class="mt-6 p-4 rounded-xl bg-slate-900/60 border border-slate-800 flex items-start gap-3 transition-all">
                     <div id="alerta-excedente-icon" class="text-emerald-400 text-lg mt-0.5">
                         <i class="fa-solid fa-circle-check"></i>
@@ -162,7 +179,7 @@
                 </div>
             </div>
 
-            <!-- Painel de Tomada de Decisão (Dinheiro vs Folga) -->
+            <!-- Painel de Tomada de Decisão -->
             <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
                 <div>
                     <h3 class="text-base font-bold text-white flex items-center gap-2 mb-2">
@@ -172,14 +189,14 @@
                     
                     <div class="space-y-3">
                         <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 cursor-pointer hover:bg-slate-800 transition-all">
-                            <input type="radio" name="decisao" value="dinheiro" checked class="text-blue-600 focus:ring-blue-500 h-4 w-4">
+                            <input type="radio" name="decisao" value="Pagar em Dinheiro" checked class="text-blue-600 focus:ring-blue-500 h-4 w-4">
                             <div class="text-xs">
                                 <span class="font-bold text-white block">Pagar em Dinheiro</span>
                                 <span class="text-slate-400">Adicionar ao acerto financeiro do mês</span>
                             </div>
                         </label>
                         <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 cursor-pointer hover:bg-slate-800 transition-all">
-                            <input type="radio" name="decisao" value="folga" class="text-blue-600 focus:ring-blue-500 h-4 w-4">
+                            <input type="radio" name="decisao" value="Banco de Horas / Folga" class="text-blue-600 focus:ring-blue-500 h-4 w-4">
                             <div class="text-xs">
                                 <span class="font-bold text-white block">Banco de Horas / Folga</span>
                                 <span class="text-slate-400">Compensar com descanso remunerado</span>
@@ -188,13 +205,13 @@
                     </div>
                 </div>
 
-                <button onclick="salvarDecisaoGestor()" class="mt-6 w-full bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 rounded-xl text-xs transition-all border border-slate-700 shadow-md">
-                    Aplicar Decisão
+                <button onclick="salvarDecisaoGestor()" class="mt-6 w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-xl text-xs transition-all border border-blue-500 shadow-md flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-check"></i> Aplicar Decisão
                 </button>
             </div>
         </div>
 
-        <!-- Tabela de Registros Detalhados -->
+        <!-- Tabela -->
         <div class="bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
             <div class="p-6 border-b border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                 <div>
@@ -229,7 +246,6 @@
                 </table>
             </div>
         </div>
-
     </main>
 
     <!-- Footer -->
@@ -237,17 +253,37 @@
         MPServ Segurança e Access Control &bull; Painel de Gestão à Vista Automatizado
     </footer>
 
-    <!-- JavaScript Principal com Conexão API Real -->
+    <!-- JavaScript Principal -->
     <script>
-        const URL_API = "https://script.google.com/macros/s/AKfycbwhAjx5rZuTv3CkLyv2dr7xOxJt6I7-QlNCuUcgCd0FPlm200hkS6Z_urgEPx_shIWTeQ/exec";
+        const SENHA_MESTRE = "admin102030#";
+        const URL_API = "https://script.google.com/macros/s/AKfycbwgx3aGb0U8ZRcmuZ0ndXe6S-SQeaVKwjP6T0RsMMjfz70-98wDpo3g_O1ig8ydqoE9cA/exec";
         const VALOR_HORA = 7.37;
 
         let plantoes = [];
         let abaAtual = 'geral';
 
         document.addEventListener('DOMContentLoaded', () => {
-            carregarDadosPlanilha();
+            // Verifica se já foi autenticado nesta sessão do navegador
+            if (sessionStorage.getItem('mpserv_auth') === 'true') {
+                document.getElementById('modal-senha').classList.add('hidden');
+                carregarDadosPlanilha();
+            }
         });
+
+        function verificarSenha() {
+            const digitada = document.getElementById('input-senha').value;
+            const erroEl = document.getElementById('erro-senha');
+
+            if (digitada === SENHA_MESTRE) {
+                sessionStorage.setItem('mpserv_auth', 'true');
+                document.getElementById('modal-senha').classList.add('hidden');
+                carregarDadosPlanilha();
+            } else {
+                erroEl.classList.remove('hidden');
+                document.getElementById('input-senha').value = '';
+                document.getElementById('input-senha').focus();
+            }
+        }
 
         async function carregarDadosPlanilha() {
             try {
@@ -285,7 +321,6 @@
 
         function mudarAba(funcionario) {
             abaAtual = funcionario;
-            
             ['geral', 'Pierre', 'Jefferson'].forEach(f => {
                 const btn = document.getElementById(`btn-${f}`);
                 if (f === funcionario) {
@@ -294,7 +329,6 @@
                     btn.className = "flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-700/50";
                 }
             });
-
             atualizarDashboard();
         }
 
@@ -342,14 +376,14 @@
                 alertaIcon.className = "text-emerald-400 text-lg mt-0.5";
                 alertaIcon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
                 alertaTitulo.innerText = "Jornada Regular";
-                alertaTexto.innerText = "O funcionário está cumprindo as horas dentro do teto semanal permitido por lei. Nenhuma ação extra necessária.";
-            } else if (totalHoras > 44 && totalHoras <= 48) {
+                alertaTexto.innerText = "O funcionário está cumprindo as horas dentro do teto semanal permitido por lei.";
+            } else {
                 barra.className = "bg-amber-500 h-full rounded-full transition-all duration-500";
                 statusLimite.innerText = "Atenção (Hora Extra)";
                 statusLimite.className = "text-xl font-bold text-amber-400 mt-1";
                 statusIcon.className = "bg-amber-500/10 p-3 rounded-xl text-amber-400 border border-amber-500/20 flex items-center justify-center w-12 h-12";
                 statusIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-lg"></i>';
-                statusDesc.innerText = `${horasExtras}h extra(s) nesta semana`;
+                statusDesc.innerText = `${horasExtras}h extra(s) acumuladas`;
                 badgeSemana.className = "px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30";
                 badgeSemana.innerText = "Atenção";
 
@@ -357,22 +391,7 @@
                 alertaIcon.className = "text-amber-400 text-lg mt-0.5";
                 alertaIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
                 alertaTitulo.innerText = `Excedente de ${horasExtras}h Detectado`;
-                alertaTexto.innerText = "Ultrapassou o limite legal de 44h semanais. Utilize o painel de tomada de decisão ao lado para optar entre pagamento em dinheiro ou compensação em folga.";
-            } else {
-                barra.className = "bg-rose-500 h-full rounded-full transition-all duration-500";
-                statusLimite.innerText = "Alerta Crítico";
-                statusLimite.className = "text-xl font-bold text-rose-400 mt-1";
-                statusIcon.className = "bg-rose-500/10 p-3 rounded-xl text-rose-400 border border-rose-500/20 flex items-center justify-center w-12 h-12";
-                statusIcon.innerHTML = '<i class="fa-solid fa-ban text-lg"></i>';
-                statusDesc.innerText = `${horasExtras}h excedentes!`;
-                badgeSemana.className = "px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30";
-                badgeSemana.innerText = "Crítico";
-
-                alertaBox.className = "mt-6 p-4 rounded-xl bg-rose-950/30 border border-rose-500/30 flex items-start gap-3";
-                alertaIcon.className = "text-rose-400 text-lg mt-0.5";
-                alertaIcon.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>';
-                alertaTitulo.innerText = `Alerta Vermelho: ${horasExtras}h Acima do Teto`;
-                alertaTexto.innerText = "Carga horária semanal muito acima do recomendado. Recomenda-se forte prioridade para banco de horas/folga compensatória.";
+                alertaTexto.innerText = "Ultrapassou o limite legal. Utilize a decisão ao lado para optar entre pagamento em dinheiro ou folga.";
             }
 
             renderizarTabela(plantoesFiltrados);
@@ -427,17 +446,39 @@
             return `${partes[2]}/${partes[1]}/${partes[0]}`;
         }
 
-        function salvarDecisaoGestor() {
+        async function salvarDecisaoGestor() {
             const radios = document.getElementsByName('decisao');
-            let escolha = 'dinheiro';
+            let escolha = 'Pagar em Dinheiro';
             for (const r of radios) {
                 if (r.checked) {
                     escolha = r.value;
                     break;
                 }
             }
-            const textoEscolha = escolha === 'dinheiro' ? 'Pagar em Dinheiro (Hora Extra)' : 'Converter em Banco de Horas / Folga';
-            alert(`Decisão registrada com sucesso!\n\nDirecionamento aplicado para a gestão semanal: ${textoEscolha}.`);
+
+            const totalHoras = abaAtual === 'geral' 
+                ? plantoes.reduce((acc, p) => acc + p.horas, 0)
+                : plantoes.filter(p => p.funcionario.toLowerCase() === abaAtual.toLowerCase()).reduce((acc, p) => acc + p.horas, 0);
+
+            const dadosEnvio = {
+                funcionario: abaAtual.toUpperCase() === 'GERAL' ? 'TODOS / GERAL' : abaAtual,
+                horas: totalHoras,
+                decisao: escolha
+            };
+
+            try {
+                alert("Enviando decisão para a planilha...");
+                await fetch(URL_API, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dadosEnvio)
+                });
+                alert(`Sucesso! A diretriz de "${escolha}" foi enviada e registrada na planilha.`);
+            } catch (erro) {
+                console.error("Erro ao enviar:", erro);
+                alert("Erro ao comunicar com a planilha. Verifique a conexão.");
+            }
         }
     </script>
 </body>
