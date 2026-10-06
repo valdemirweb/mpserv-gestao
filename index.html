@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão à Vista - MPServ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            850: '#151f32',
+                            900: '#0f172a',
+                            950: '#090d16',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-30 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600/20 border border-blue-500/30 p-2.5 rounded-xl text-blue-400">
+                    <i class="fa-solid fa-shield-halved text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-white tracking-wide">MPServ Gestão à Vista</h1>
+                    <p class="text-xs text-slate-400">Controle Operacional de Plantões e Jornada</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="carregarDadosPlanilha()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-sm font-semibold transition-all border border-slate-700 flex items-center gap-2">
+                    <i class="fa-solid fa-rotate"></i> Atualizar Dados
+                </button>
+                <div class="hidden sm:flex flex-col text-right">
+                    <span class="text-xs text-slate-400">Base Operacional</span>
+                    <span class="text-sm font-bold text-emerald-400">R$ 7,37 / hora</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full space-y-8">
+
+        <!-- Abas de Seleção de Funcionários -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-slate-900/60 p-2 rounded-2xl border border-slate-800 backdrop-blur-md">
+            <div class="flex items-center gap-1.5 w-full sm:w-auto">
+                <button id="btn-geral" onclick="mudarAba('geral')" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-sm font-semibold transition-all bg-blue-600 text-white shadow-md">
+                    Visão Geral
+                </button>
+                <button id="btn-Pierre" onclick="mudarAba('Pierre')" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-700/50">
+                    Pierre
+                </button>
+                <button id="btn-Jefferson" onclick="mudarAba('Jefferson')" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-700/50">
+                    Jefferson
+                </button>
+            </div>
+            <div class="px-4 py-2 text-xs text-slate-400 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Sincronizado com Google Sheets
+            </div>
+        </div>
+
+        <!-- Cards de Resumo -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Card Horas -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 relative overflow-hidden shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-400">Total de Horas no Mês</p>
+                        <h3 id="card-total-horas" class="text-3xl font-extrabold text-white mt-1">0h</h3>
+                    </div>
+                    <div class="bg-blue-500/10 p-3 rounded-xl text-blue-400 border border-blue-500/20 flex items-center justify-center w-12 h-12">
+                        <i class="fa-solid fa-clock text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center gap-2 text-xs text-slate-400">
+                    <span class="text-blue-400 font-semibold" id="card-total-plantoes">0</span> plantões registrados
+                </div>
+            </div>
+
+            <!-- Card Custo / Valor -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 relative overflow-hidden shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-400">Valor Acumulado</p>
+                        <h3 id="card-total-custo" class="text-3xl font-extrabold text-emerald-400 mt-1">R$ 0,00</h3>
+                    </div>
+                    <div class="bg-emerald-500/10 p-3 rounded-xl text-emerald-400 border border-emerald-500/20 flex items-center justify-center w-12 h-12">
+                        <i class="fa-solid fa-wallet text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 text-xs text-slate-400">
+                    Calculado sobre base de R$ 7,37/h
+                </div>
+            </div>
+
+            <!-- Card Limite Semanal (44h) -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 relative overflow-hidden shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-400">Status Teto Semanal (44h)</p>
+                        <h3 id="card-status-limite" class="text-xl font-bold text-emerald-400 mt-1">Dentro do Limite</h3>
+                    </div>
+                    <div id="card-status-icon" class="bg-emerald-500/10 p-3 rounded-xl text-emerald-400 border border-emerald-500/20 flex items-center justify-center w-12 h-12">
+                        <i class="fa-solid fa-shield text-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-4 text-xs text-slate-400" id="card-status-desc">
+                    0h extras acumuladas
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Alerta e Limite Semanal (Gestão à Vista) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Barra de Progresso e Alerta -->
+            <div class="lg:col-span-2 bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-blue-400"></i> Monitoramento da Carga Horária Semanal
+                        </h3>
+                        <span id="badge-semana-status" class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Normal</span>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-6">Acompanhamento do limite legal de 44h semanais para tomada de decisão prévia.</p>
+                    
+                    <!-- Barra visual -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs font-semibold text-slate-300">
+                            <span>0h</span>
+                            <span id="texto-progresso-horas">0h / 44h</span>
+                            <span>44h (Teto)</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-4 rounded-full overflow-hidden p-0.5 border border-slate-700/50">
+                            <div id="barra-progresso" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Box de Orientação de Gestão -->
+                <div id="alerta-excedente-box" class="mt-6 p-4 rounded-xl bg-slate-900/60 border border-slate-800 flex items-start gap-3 transition-all">
+                    <div id="alerta-excedente-icon" class="text-emerald-400 text-lg mt-0.5">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div>
+                        <h4 id="alerta-excedente-titulo" class="text-sm font-bold text-white">Jornada Regular</h4>
+                        <p id="alerta-excedente-texto" class="text-xs text-slate-300 mt-0.5">O funcionário está cumprindo as horas dentro do teto semanal permitido por lei.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Painel de Tomada de Decisão (Dinheiro vs Folga) -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+                <div>
+                    <h3 class="text-base font-bold text-white flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-scale-balanced text-purple-400"></i> Decisão de Acerto
+                    </h3>
+                    <p class="text-xs text-slate-400 mb-4">Caso haja horas excedentes, defina como deseja proceder com o funcionário:</p>
+                    
+                    <div class="space-y-3">
+                        <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 cursor-pointer hover:bg-slate-800 transition-all">
+                            <input type="radio" name="decisao" value="dinheiro" checked class="text-blue-600 focus:ring-blue-500 h-4 w-4">
+                            <div class="text-xs">
+                                <span class="font-bold text-white block">Pagar em Dinheiro</span>
+                                <span class="text-slate-400">Adicionar ao acerto financeiro do mês</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 cursor-pointer hover:bg-slate-800 transition-all">
+                            <input type="radio" name="decisao" value="folga" class="text-blue-600 focus:ring-blue-500 h-4 w-4">
+                            <div class="text-xs">
+                                <span class="font-bold text-white block">Banco de Horas / Folga</span>
+                                <span class="text-slate-400">Compensar com descanso remunerado</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <button onclick="salvarDecisaoGestor()" class="mt-6 w-full bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 rounded-xl text-xs transition-all border border-slate-700 shadow-md">
+                    Aplicar Decisão
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabela de Registros Detalhados -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+            <div class="p-6 border-b border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-bold text-white">Histórico de Plantões e Observações</h3>
+                    <p class="text-xs text-slate-400">Registros enviados via formulário pelos operadores</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-500 text-sm"></i>
+                        <input type="text" id="filtro-busca" onkeyup="filtrarTabela()" placeholder="Buscar nas observações..." class="bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 w-full sm:w-64 transition-all">
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase bg-slate-950/40">
+                            <th class="py-3.5 px-6">Funcionário</th>
+                            <th class="py-3.5 px-6">Data</th>
+                            <th class="py-3.5 px-6">Horas</th>
+                            <th class="py-3.5 px-6">Valor</th>
+                            <th class="py-3.5 px-6">Observações do Sistema</th>
+                            <th class="py-3.5 px-6 text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-corpo" class="divide-y divide-slate-800/60">
+                        <tr>
+                            <td colspan="6" class="py-8 text-center text-slate-500">Carregando dados da planilha...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 mt-12 py-6 text-center text-xs text-slate-500">
+        MPServ Segurança e Access Control &bull; Painel de Gestão à Vista Automatizado
+    </footer>
+
+    <!-- JavaScript Principal com Conexão API Real -->
+    <script>
+        const URL_API = "https://script.google.com/macros/s/AKfycbwhAjx5rZuTv3CkLyv2dr7xOxJt6I7-QlNCuUcgCd0FPlm200hkS6Z_urgEPx_shIWTeQ/exec";
+        const VALOR_HORA = 7.37;
+
+        let plantoes = [];
+        let abaAtual = 'geral';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarDadosPlanilha();
+        });
+
+        async function carregarDadosPlanilha() {
+            try {
+                document.getElementById('tabela-corpo').innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Sincronizando com a planilha...</td></tr>`;
+                
+                const resposta = await fetch(URL_API);
+                const dadosBrutos = await resposta.json();
+
+                plantoes = dadosBrutos.map((item, index) => {
+                    let dataFormatada = '';
+                    if (item.timestamp) {
+                        const d = new Date(item.timestamp);
+                        if (!isNaN(d)) {
+                            dataFormatada = d.toISOString().split('T')[0];
+                        } else {
+                            dataFormatada = item.timestamp.substring(0, 10);
+                        }
+                    }
+
+                    return {
+                        id: index + 1,
+                        funcionario: item.funcionario || 'Não identificado',
+                        data: dataFormatada || '2026-10-05',
+                        horas: parseFloat(item.horas) || 0,
+                        obs: item.observacao || 'Registrado via formulário'
+                    };
+                }).filter(p => p.horas > 0);
+
+                atualizarDashboard();
+            } catch (erro) {
+                console.error("Erro ao buscar dados:", erro);
+                document.getElementById('tabela-corpo').innerHTML = `<tr><td colspan="6" class="py-8 text-center text-rose-400">Erro ao carregar dados da planilha. Verifique a conexão.</td></tr>`;
+            }
+        }
+
+        function mudarAba(funcionario) {
+            abaAtual = funcionario;
+            
+            ['geral', 'Pierre', 'Jefferson'].forEach(f => {
+                const btn = document.getElementById(`btn-${f}`);
+                if (f === funcionario) {
+                    btn.className = "flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-sm font-semibold transition-all bg-blue-600 text-white shadow-md";
+                } else {
+                    btn.className = "flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-700/50";
+                }
+            });
+
+            atualizarDashboard();
+        }
+
+        function atualizarDashboard() {
+            const plantoesFiltrados = abaAtual === 'geral' 
+                ? plantoes 
+                : plantoes.filter(p => p.funcionario.toLowerCase() === abaAtual.toLowerCase());
+
+            const totalHoras = plantoesFiltrados.reduce((acc, p) => acc + p.horas, 0);
+            const totalPlantoes = plantoesFiltrados.length;
+            const totalCusto = totalHoras * VALOR_HORA;
+
+            document.getElementById('card-total-horas').innerText = `${totalHoras}h`;
+            document.getElementById('card-total-plantoes').innerText = totalPlantoes;
+            document.getElementById('card-total-custo').innerText = `R$ ${totalCusto.toFixed(2).replace('.', ',')}`;
+
+            const limiteSemanal = 44;
+            const horasExtras = Math.max(0, totalHoras - limiteSemanal);
+            const percentual = Math.min(100, (totalHoras / limiteSemanal) * 100);
+
+            const barra = document.getElementById('barra-progresso');
+            const statusLimite = document.getElementById('card-status-limite');
+            const statusIcon = document.getElementById('card-status-icon');
+            const statusDesc = document.getElementById('card-status-desc');
+            const badgeSemana = document.getElementById('badge-semana-status');
+            const alertaBox = document.getElementById('alerta-excedente-box');
+            const alertaIcon = document.getElementById('alerta-excedente-icon');
+            const alertaTitulo = document.getElementById('alerta-excedente-titulo');
+            const alertaTexto = document.getElementById('alerta-excedente-texto');
+
+            barra.style.width = `${percentual}%`;
+            document.getElementById('texto-progresso-horas').innerText = `${totalHoras}h / ${limiteSemanal}h`;
+
+            if (totalHoras <= 44) {
+                barra.className = "bg-emerald-500 h-full rounded-full transition-all duration-500";
+                statusLimite.innerText = "Dentro do Limite";
+                statusLimite.className = "text-xl font-bold text-emerald-400 mt-1";
+                statusIcon.className = "bg-emerald-500/10 p-3 rounded-xl text-emerald-400 border border-emerald-500/20 flex items-center justify-center w-12 h-12";
+                statusIcon.innerHTML = '<i class="fa-solid fa-shield text-lg"></i>';
+                statusDesc.innerText = "0h extras acumuladas";
+                badgeSemana.className = "px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+                badgeSemana.innerText = "Normal";
+
+                alertaBox.className = "mt-6 p-4 rounded-xl bg-slate-900/60 border border-emerald-500/30 flex items-start gap-3";
+                alertaIcon.className = "text-emerald-400 text-lg mt-0.5";
+                alertaIcon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+                alertaTitulo.innerText = "Jornada Regular";
+                alertaTexto.innerText = "O funcionário está cumprindo as horas dentro do teto semanal permitido por lei. Nenhuma ação extra necessária.";
+            } else if (totalHoras > 44 && totalHoras <= 48) {
+                barra.className = "bg-amber-500 h-full rounded-full transition-all duration-500";
+                statusLimite.innerText = "Atenção (Hora Extra)";
+                statusLimite.className = "text-xl font-bold text-amber-400 mt-1";
+                statusIcon.className = "bg-amber-500/10 p-3 rounded-xl text-amber-400 border border-amber-500/20 flex items-center justify-center w-12 h-12";
+                statusIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-lg"></i>';
+                statusDesc.innerText = `${horasExtras}h extra(s) nesta semana`;
+                badgeSemana.className = "px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30";
+                badgeSemana.innerText = "Atenção";
+
+                alertaBox.className = "mt-6 p-4 rounded-xl bg-amber-950/30 border border-amber-500/30 flex items-start gap-3";
+                alertaIcon.className = "text-amber-400 text-lg mt-0.5";
+                alertaIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+                alertaTitulo.innerText = `Excedente de ${horasExtras}h Detectado`;
+                alertaTexto.innerText = "Ultrapassou o limite legal de 44h semanais. Utilize o painel de tomada de decisão ao lado para optar entre pagamento em dinheiro ou compensação em folga.";
+            } else {
+                barra.className = "bg-rose-500 h-full rounded-full transition-all duration-500";
+                statusLimite.innerText = "Alerta Crítico";
+                statusLimite.className = "text-xl font-bold text-rose-400 mt-1";
+                statusIcon.className = "bg-rose-500/10 p-3 rounded-xl text-rose-400 border border-rose-500/20 flex items-center justify-center w-12 h-12";
+                statusIcon.innerHTML = '<i class="fa-solid fa-ban text-lg"></i>';
+                statusDesc.innerText = `${horasExtras}h excedentes!`;
+                badgeSemana.className = "px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30";
+                badgeSemana.innerText = "Crítico";
+
+                alertaBox.className = "mt-6 p-4 rounded-xl bg-rose-950/30 border border-rose-500/30 flex items-start gap-3";
+                alertaIcon.className = "text-rose-400 text-lg mt-0.5";
+                alertaIcon.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>';
+                alertaTitulo.innerText = `Alerta Vermelho: ${horasExtras}h Acima do Teto`;
+                alertaTexto.innerText = "Carga horária semanal muito acima do recomendado. Recomenda-se forte prioridade para banco de horas/folga compensatória.";
+            }
+
+            renderizarTabela(plantoesFiltrados);
+        }
+
+        function renderizarTabela(dados) {
+            const corpo = document.getElementById('tabela-corpo');
+            corpo.innerHTML = '';
+
+            if (dados.length === 0) {
+                corpo.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-500">Nenhum registro encontrado para esta seleção.</td></tr>`;
+                return;
+            }
+
+            dados.forEach(p => {
+                const valorTotal = p.horas * VALOR_HORA;
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-700/30 transition-all";
+                tr.innerHTML = `
+                    <td class="py-4 px-6 font-semibold text-white flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full ${p.funcionario.toLowerCase() === 'pierre' ? 'bg-blue-500' : 'bg-purple-500'}"></span>
+                        ${p.funcionario}
+                    </td>
+                    <td class="py-4 px-6 text-slate-300">${formatarData(p.data)}</td>
+                    <td class="py-4 px-6 text-slate-300 font-medium">${p.horas}h</td>
+                    <td class="py-4 px-6 text-emerald-400 font-semibold">R$ ${valorTotal.toFixed(2).replace('.', ',')}</td>
+                    <td class="py-4 px-6 text-slate-400 text-xs italic">${p.obs || 'Nenhuma observação'}</td>
+                    <td class="py-4 px-6 text-right">
+                        <span class="text-xs text-slate-500"><i class="fa-solid fa-check text-emerald-500 mr-1"></i> Sincronizado</span>
+                    </td>
+                `;
+                corpo.appendChild(tr);
+            });
+        }
+
+        function filtrarTabela() {
+            const termo = document.getElementById('filtro-busca').value.toLowerCase();
+            const plantoesFiltrados = abaAtual === 'geral' 
+                ? plantoes 
+                : plantoes.filter(p => p.funcionario.toLowerCase() === abaAtual.toLowerCase());
+
+            const filtrados = plantoesFiltrados.filter(p => 
+                p.obs.toLowerCase().includes(termo) || p.funcionario.toLowerCase().includes(termo)
+            );
+            renderizarTabela(filtrados);
+        }
+
+        function formatarData(dataStr) {
+            if (!dataStr) return '';
+            const partes = dataStr.split('-');
+            if (partes.length !== 3) return dataStr;
+            return `${partes[2]}/${partes[1]}/${partes[0]}`;
+        }
+
+        function salvarDecisaoGestor() {
+            const radios = document.getElementsByName('decisao');
+            let escolha = 'dinheiro';
+            for (const r of radios) {
+                if (r.checked) {
+                    escolha = r.value;
+                    break;
+                }
+            }
+            const textoEscolha = escolha === 'dinheiro' ? 'Pagar em Dinheiro (Hora Extra)' : 'Converter em Banco de Horas / Folga';
+            alert(`Decisão registrada com sucesso!\n\nDirecionamento aplicado para a gestão semanal: ${textoEscolha}.`);
+        }
+    </script>
+</body>
+</html>
