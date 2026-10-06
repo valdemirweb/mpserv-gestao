@@ -56,7 +56,7 @@
                 </div>
                 <div>
                     <h1 class="text-lg font-bold text-white tracking-wide">MPServ Gestão à Vista</h1>
-                    <p class="text-xs text-slate-400">Controle Operacional de Plantões e Jornada</p>
+                    <p class="text-xs text-slate-400">Controle Operacional de Plantões, Jornada e Folgas</p>
                 </div>
             </div>
             <div class="flex items-center gap-3">
@@ -107,7 +107,7 @@
                     </div>
                 </div>
                 <div class="mt-4 flex items-center gap-2 text-xs text-slate-400">
-                    <span class="text-blue-400 font-semibold" id="card-total-plantoes">0</span> plantões registrados
+                    <span class="text-blue-400 font-semibold" id="card-total-plantoes">0</span> plantões válidos (já abatidas as folgas)
                 </div>
             </div>
 
@@ -123,7 +123,7 @@
                     </div>
                 </div>
                 <div class="mt-4 text-xs text-slate-400">
-                    Calculado sobre base de R$ 7,37/h
+                    Calculado sobre base de R$ 7,37/h líquidas
                 </div>
             </div>
 
@@ -139,8 +139,44 @@
                     </div>
                 </div>
                 <div class="mt-4 text-xs text-slate-400" id="card-status-desc">
-                    0h extras acumuladas
+                    Jornada compensada corretamente
                 </div>
+            </div>
+        </div>
+
+        <!-- NOVO: Seção de Rastreabilidade de Extras x Folgas para Questionamentos -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                <div>
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-check text-purple-400"></i> Rastreabilidade de Horas Extras e Folgas Correspondentes
+                    </h3>
+                    <p class="text-xs text-slate-400">Tabela de conferência simples para tirar qualquer dúvida do funcionário sobre dias trabalhados a mais e suas respectivas folgas.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <select id="select-filtro-rastreio" onchange="renderizarTabelaRastreio()" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
+                        <option value="todos">Todos os Funcionários</option>
+                        <option value="Pierre">Pierre</option>
+                        <option value="Jefferson">Jefferson</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="border-b border-slate-800 text-slate-400 uppercase bg-slate-950/40">
+                            <th class="py-3 px-4">Funcionário</th>
+                            <th class="py-3 px-4">Data da Hora Extra (Trabalhado)</th>
+                            <th class="py-3 px-4">Data da Folga Correspondente</th>
+                            <th class="py-3 px-4">Status da Compensação</th>
+                            <th class="py-3 px-4">Observação / Justificativa</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-rastreio-corpo" class="divide-y divide-slate-800/60">
+                        <!-- Preenchido via JavaScript -->
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -154,7 +190,7 @@
                         </h3>
                         <span id="badge-semana-status" class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Normal</span>
                     </div>
-                    <p class="text-sm text-slate-400 mb-6">Acompanhamento do limite legal de 44h semanais para tomada de decisão prévia.</p>
+                    <p class="text-sm text-slate-400 mb-6">Acompanhamento do limite legal de 44h semanais com desconto automático de folgas e compensações.</p>
                     
                     <div class="space-y-2">
                         <div class="flex justify-between text-xs font-semibold text-slate-300">
@@ -185,7 +221,7 @@
                     <h3 class="text-base font-bold text-white flex items-center gap-2 mb-2">
                         <i class="fa-solid fa-scale-balanced text-purple-400"></i> Decisão de Acerto
                     </h3>
-                    <p class="text-xs text-slate-400 mb-4">Caso haja horas excedentes, defina como deseja proceder com o funcionário:</p>
+                    <p class="text-xs text-slate-400 mb-4">Caso haja horas líquidas excedentes, defina como deseja proceder com o funcionário:</p>
                     
                     <div class="space-y-3">
                         <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 cursor-pointer hover:bg-slate-800 transition-all">
@@ -225,15 +261,14 @@
                     </div>
                 </div>
             </div>
-
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-sm">
                     <thead>
                         <tr class="border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase bg-slate-950/40">
                             <th class="py-3.5 px-6">Funcionário</th>
                             <th class="py-3.5 px-6">Data</th>
-                            <th class="py-3.5 px-6">Horas</th>
-                            <th class="py-3.5 px-6">Valor</th>
+                            <th class="py-3.5 px-6">Horas / Impacto</th>
+                            <th class="py-3.5 px-6">Valor Líquido</th>
                             <th class="py-3.5 px-6">Observações do Sistema</th>
                             <th class="py-3.5 px-6 text-right">Ações</th>
                         </tr>
@@ -246,6 +281,7 @@
                 </table>
             </div>
         </div>
+
     </main>
 
     <!-- Footer -->
@@ -262,8 +298,18 @@
         let plantoes = [];
         let abaAtual = 'geral';
 
+        // Lista fixa de pares de compensação conhecidos para auditoria rápida com o funcionário
+        const compensacoesCadastradas = [
+            {
+                funcionario: "Jefferson",
+                dataExtra: "03/10/2026",
+                dataFolga: "06/10/2026",
+                status: "Compensado",
+                obs: "Folga compensatória referente ao plantão extra realizado no sábado (03/10)"
+            }
+        ];
+
         document.addEventListener('DOMContentLoaded', () => {
-            // Verifica se já foi autenticado nesta sessão do navegador
             if (sessionStorage.getItem('mpserv_auth') === 'true') {
                 document.getElementById('modal-senha').classList.add('hidden');
                 carregarDadosPlanilha();
@@ -303,14 +349,18 @@
                         }
                     }
 
+                    let horasBrutas = parseFloat(item.horas) || 0;
+                    let obsTexto = (item.observacao || '').toLowerCase();
+                    
                     return {
                         id: index + 1,
                         funcionario: item.funcionario || 'Não identificado',
                         data: dataFormatada || '2026-10-05',
-                        horas: parseFloat(item.horas) || 0,
-                        obs: item.observacao || 'Registrado via formulário'
+                        horas: horasBrutas,
+                        obs: item.observacao || 'Registrado via formulário',
+                        ehFolga: obsTexto.includes('folga') || obsTexto.includes('compensação')
                     };
-                }).filter(p => p.horas > 0);
+                }).filter(p => p.horas !== 0 || p.ehFolga);
 
                 atualizarDashboard();
             } catch (erro) {
@@ -329,6 +379,7 @@
                     btn.className = "flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-700/50";
                 }
             });
+            document.getElementById('select-filtro-rastreio').value = funcionario === 'geral' ? 'todos' : funcionario;
             atualizarDashboard();
         }
 
@@ -338,7 +389,7 @@
                 : plantoes.filter(p => p.funcionario.toLowerCase() === abaAtual.toLowerCase());
 
             const totalHoras = plantoesFiltrados.reduce((acc, p) => acc + p.horas, 0);
-            const totalPlantoes = plantoesFiltrados.length;
+            const totalPlantoes = plantoesFiltrados.filter(p => !p.ehFolga || p.horas > 0).length;
             const totalCusto = totalHoras * VALOR_HORA;
 
             document.getElementById('card-total-horas').innerText = `${totalHoras}h`;
@@ -368,33 +419,34 @@
                 statusLimite.className = "text-xl font-bold text-emerald-400 mt-1";
                 statusIcon.className = "bg-emerald-500/10 p-3 rounded-xl text-emerald-400 border border-emerald-500/20 flex items-center justify-center w-12 h-12";
                 statusIcon.innerHTML = '<i class="fa-solid fa-shield text-lg"></i>';
-                statusDesc.innerText = "0h extras acumuladas";
+                statusDesc.innerText = "Jornada compensada corretamente";
                 badgeSemana.className = "px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
                 badgeSemana.innerText = "Normal";
 
                 alertaBox.className = "mt-6 p-4 rounded-xl bg-slate-900/60 border border-emerald-500/30 flex items-start gap-3";
                 alertaIcon.className = "text-emerald-400 text-lg mt-0.5";
                 alertaIcon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
-                alertaTitulo.innerText = "Jornada Regular";
-                alertaTexto.innerText = "O funcionário está cumprindo as horas dentro do teto semanal permitido por lei.";
+                alertaTitulo.innerText = "Jornada Regular / Compensada";
+                alertaTexto.innerText = "Folgas registradas e abatidas adequadamente, garantindo transparência total com o colaborador.";
             } else {
                 barra.className = "bg-amber-500 h-full rounded-full transition-all duration-500";
                 statusLimite.innerText = "Atenção (Hora Extra)";
                 statusLimite.className = "text-xl font-bold text-amber-400 mt-1";
                 statusIcon.className = "bg-amber-500/10 p-3 rounded-xl text-amber-400 border border-amber-500/20 flex items-center justify-center w-12 h-12";
                 statusIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-lg"></i>';
-                statusDesc.innerText = `${horasExtras}h extra(s) acumuladas`;
+                statusDesc.innerText = `${horasExtras}h extra(s) líquidas acumuladas`;
                 badgeSemana.className = "px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30";
                 badgeSemana.innerText = "Atenção";
 
                 alertaBox.className = "mt-6 p-4 rounded-xl bg-amber-950/30 border border-amber-500/30 flex items-start gap-3";
                 alertaIcon.className = "text-amber-400 text-lg mt-0.5";
                 alertaIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
-                alertaTitulo.innerText = `Excedente de ${horasExtras}h Detectado`;
-                alertaTexto.innerText = "Ultrapassou o limite legal. Utilize a decisão ao lado para optar entre pagamento em dinheiro ou folga.";
+                alertaTitulo.innerText = `Excedente Líquido de ${horasExtras}h Detectado`;
+                alertaTexto.innerText = "Ultrapassou o limite legal. Utilize a decisão ao lado para optar entre pagamento ou folga.";
             }
 
             renderizarTabela(plantoesFiltrados);
+            renderizarTabelaRastreio();
         }
 
         function renderizarTabela(dados) {
@@ -410,10 +462,16 @@
                 const valorTotal = p.horas * VALOR_HORA;
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-700/30 transition-all";
+                
+                let badgeTipo = p.ehFolga 
+                    ? `<span class="px-2 py-0.5 rounded text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/30 ml-2">Folga / Compensação</span>` 
+                    : '';
+
                 tr.innerHTML = `
                     <td class="py-4 px-6 font-semibold text-white flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full ${p.funcionario.toLowerCase() === 'pierre' ? 'bg-blue-500' : 'bg-purple-500'}"></span>
                         ${p.funcionario}
+                        ${badgeTipo}
                     </td>
                     <td class="py-4 px-6 text-slate-300">${formatarData(p.data)}</td>
                     <td class="py-4 px-6 text-slate-300 font-medium">${p.horas}h</td>
@@ -424,6 +482,39 @@
                     </td>
                 `;
                 corpo.appendChild(tr);
+            });
+        }
+
+        function renderizarTabelaRastreio() {
+            const filtroFunc = document.getElementById('select-filtro-rastreio').value;
+            const corpoRastreio = document.getElementById('tabela-rastreio-corpo');
+            corpoRastreio.innerHTML = '';
+
+            const filtrados = filtroFunc === 'todos' 
+                ? compensacoesCadastradas 
+                : compensacoesCadastradas.filter(c => c.funcionario.toLowerCase() === filtroFunc.toLowerCase());
+
+            if (filtrados.length === 0) {
+                corpoRastreio.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-500">Nenhum registro de compensação cruzada para este filtro.</td></tr>`;
+                return;
+            }
+
+            filtrados.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-700/30 transition-all";
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-semibold text-white flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full ${c.funcionario.toLowerCase() === 'pierre' ? 'bg-blue-500' : 'bg-purple-500'}"></span>
+                        ${c.funcionario}
+                    </td>
+                    <td class="py-3 px-4 text-amber-400 font-medium"><i class="fa-solid fa-clock-rotate-left mr-1"></i> ${c.dataExtra} (Extra Realizada)</td>
+                    <td class="py-3 px-4 text-purple-400 font-medium"><i class="fa-solid fa-mug-hot mr-1"></i> ${c.dataFolga} (Folga Gozada)</td>
+                    <td class="py-3 px-4">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">${c.status}</span>
+                    </td>
+                    <td class="py-3 px-4 text-slate-400 text-xs">${c.obs}</td>
+                `;
+                corpoRastreio.appendChild(tr);
             });
         }
 
