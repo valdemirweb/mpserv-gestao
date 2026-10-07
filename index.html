@@ -151,7 +151,7 @@
                     <h3 class="text-base font-bold text-white flex items-center gap-2">
                         <i class="fa-solid fa-calendar-check text-purple-400"></i> Rastreabilidade de Horas Extras e Folgas Correspondentes
                     </h3>
-                    <p class="text-xs text-slate-400">Tabela de conferência simples para tirar qualquer dúvida do funcionário sobre dias trabalhados e folgas (Turno: 08h às 17h c/ 1h de almoço).</p>
+                    <p class="text-xs text-slate-400">Preenchido automaticamente a partir das observações da planilha (ex: "Vai folgar dia X").</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <select id="select-filtro-rastreio" onchange="renderizarTabelaRastreio()" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
@@ -167,10 +167,9 @@
                     <thead>
                         <tr class="border-b border-slate-800 text-slate-400 uppercase bg-slate-950/40">
                             <th class="py-3 px-4">Funcionário</th>
-                            <th class="py-3 px-4">Data da Hora Extra (8h líquidas)</th>
-                            <th class="py-3 px-4">Data da Folga Referente</th>
+                            <th class="py-3 px-4">Data do Registro (Hora Extra)</th>
+                            <th class="py-3 px-4">Detalhes / Folga na Observação</th>
                             <th class="py-3 px-4">Status da Compensação</th>
-                            <th class="py-3 px-4">Observação / Justificativa</th>
                         </tr>
                     </thead>
                     <tbody id="tabela-rastreio-corpo" class="divide-y divide-slate-800/60">
@@ -298,17 +297,6 @@
         let plantoes = [];
         let abaAtual = 'geral';
 
-        // Lista de compensações cadastradas para esclarecimento aos funcionários
-        const compensacoesCadastradas = [
-            {
-                funcionario: "Jefferson",
-                dataExtra: "03/10/2026",
-                dataFolga: "06/10/2026",
-                status: "Compensado",
-                obs: "Turno 08h às 17h (8h líquidas trabalhadas após dedução de 1h de almoço)"
-            }
-        ];
-
         document.addEventListener('DOMContentLoaded', () => {
             if (sessionStorage.getItem('mpserv_auth') === 'true') {
                 document.getElementById('modal-senha').classList.add('hidden');
@@ -350,7 +338,6 @@
                     }
 
                     let horasBrutas = parseFloat(item.horas) || 0;
-                    // Se o funcionário trabalhou o turno completo de 9h (08h às 17h), desconta 1h de almoço automaticamente, caso venha bruto sem o desconto
                     let horasLiquidas = horasBrutas >= 9 ? horasBrutas - 1 : horasBrutas;
 
                     let obsTexto = (item.observacao || '').toLowerCase();
@@ -493,16 +480,22 @@
             const corpoRastreio = document.getElementById('tabela-rastreio-corpo');
             corpoRastreio.innerHTML = '';
 
-            const filtrados = filtroFunc === 'todos' 
-                ? compensacoesCadastradas 
-                : compensacoesCadastradas.filter(c => c.funcionario.toLowerCase() === filtroFunc.toLowerCase());
+            // Filtra os plantões que possuem menção a folga ou compensação na observação
+            let registrosComFolga = plantoes.filter(p => {
+                let obsLower = p.obs.toLowerCase();
+                return obsLower.includes('folga') || obsLower.includes('compensação') || obsLower.includes('vai folgar');
+            });
 
-            if (filtrados.length === 0) {
-                corpoRastreio.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-500">Nenhum registro de compensação cruzada para este filtro.</td></tr>`;
+            if (filtroFunc !== 'todos') {
+                registrosComFolga = registrosComFolga.filter(c => c.funcionario.toLowerCase() === filtroFunc.toLowerCase());
+            }
+
+            if (registrosComFolga.length === 0) {
+                corpoRastreio.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-slate-500">Nenhum registro de folga/compensação nas observações para este filtro. Escreva "Folga" na observação da planilha para preencher.</td></tr>`;
                 return;
             }
 
-            filtrados.forEach(c => {
+            registrosComFolga.forEach(c => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-700/30 transition-all";
                 tr.innerHTML = `
@@ -510,12 +503,11 @@
                         <span class="w-2 h-2 rounded-full ${c.funcionario.toLowerCase() === 'pierre' ? 'bg-blue-500' : 'bg-purple-500'}"></span>
                         ${c.funcionario}
                     </td>
-                    <td class="py-3 px-4 text-amber-400 font-medium"><i class="fa-solid fa-clock-rotate-left mr-1"></i> ${c.dataExtra} (8h líquidas)</td>
-                    <td class="py-3 px-4 text-purple-400 font-medium"><i class="fa-solid fa-mug-hot mr-1"></i> ${c.dataFolga} (Folga Gozada)</td>
+                    <td class="py-3 px-4 text-amber-400 font-medium"><i class="fa-solid fa-clock-rotate-left mr-1"></i> ${formatarData(c.data)}</td>
+                    <td class="py-3 px-4 text-purple-300 font-medium"><i class="fa-solid fa-mug-hot mr-1"></i> ${c.obs}</td>
                     <td class="py-3 px-4">
-                        <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">${c.status}</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/30 font-semibold">Registrado p/ Compensação</span>
                     </td>
-                    <td class="py-3 px-4 text-slate-400 text-xs">${c.obs}</td>
                 `;
                 corpoRastreio.appendChild(tr);
             });
