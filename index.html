@@ -252,12 +252,12 @@
             </div>
         </div>
 
-        <!-- Tabela Principal com Largura Proporcional e Fixa -->
+        <!-- Tabela Principal -->
         <div class="bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
             <div class="p-6 border-b border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                 <div>
                     <h3 class="text-lg font-bold text-white">Histórico de Plantões e Observações</h3>
-                    <p class="text-xs text-slate-400">Data real e posto extraídos automaticamente das observações do sistema</p>
+                    <p class="text-xs text-slate-400">Lê diretamente a coluna "Data do Plantão" da sua planilha</p>
                 </div>
                 <div class="flex items-center gap-3">
                     <div class="relative">
@@ -325,23 +325,16 @@
             }
         }
 
-        function extrairDataReal(obs, timestampOriginal) {
-            if (!obs) return timestampOriginal ? timestampOriginal.substring(0, 10) : '2026-10-05';
-            
-            let obsLower = obs.toLowerCase();
-            
-            const matchDataCompleta = obsLower.match(/(\d{2})[\/\-](\d{2})[\/\-](\d{4})/);
-            if (matchDataCompleta) {
-                return `${matchDataCompleta[3]}-${matchDataCompleta[2]}-${matchDataCompleta[1]}`;
+        // Pega a data diretamente da coluna "data" enviada pelo Apps Script (coluna B da planilha)
+        function extrairDataPlanilha(dataColunaB, timestampOriginal) {
+            if (dataColunaB) {
+                // Se já vier no formato YYYY-MM-DD ou DD/MM/YYYY
+                let strData = String(dataColunaB).trim();
+                if (strData.includes('T')) {
+                    return strData.split('T')[0];
+                }
+                return strData;
             }
-
-            if (obsLower.includes('dia 1') || obsLower.includes('dia 01')) return '2026-10-01';
-            if (obsLower.includes('dia 2') || obsLower.includes('dia 02')) return '2026-10-02';
-            if (obsLower.includes('dia 4') || obsLower.includes('dia 04')) return '2026-10-04';
-            if (obsLower.includes('dia 5') || obsLower.includes('dia 05')) return '2026-10-05';
-            if (obsLower.includes('dia 6') || obsLower.includes('dia 06')) return '2026-10-06';
-            if (obsLower.includes('dia 3') || obsLower.includes('dia 03')) return '2026-10-03';
-
             if (timestampOriginal) {
                 const d = new Date(timestampOriginal);
                 if (!isNaN(d)) return d.toISOString().split('T')[0];
@@ -371,7 +364,8 @@
 
                 plantoes = dadosBrutos.map((item, index) => {
                     let obsTexto = item.observacao || '';
-                    let dataReal = extrairDataReal(obsTexto, item.timestamp);
+                    // Lê diretamente o campo de data enviado pelo Apps Script (Coluna B)
+                    let dataReal = extrairDataPlanilha(item.data, item.timestamp);
                     let postoReal = extrairPosto(obsTexto);
 
                     let horasBrutas = parseFloat(item.horas) || 0;
@@ -589,9 +583,12 @@
 
         function formatarData(dataStr) {
             if (!dataStr) return '';
+            // Se vier no formato YYYY-MM-DD
             const partes = dataStr.split('-');
-            if (partes.length !== 3) return dataStr;
-            return `${partes[2]}/${partes[1]}/${partes[0]}`;
+            if (partes.length === 3) {
+                return `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+            return dataStr;
         }
 
         async function salvarDecisaoGestor() {
