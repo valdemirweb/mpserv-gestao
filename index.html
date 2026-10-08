@@ -144,14 +144,14 @@
             </div>
         </div>
 
-        <!-- Seção de Rastreabilidade de Extras x Folgas (Com adaptação impecável mobile/desktop) -->
+        <!-- Seção de Rastreabilidade por Posto e Observações -->
         <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
                 <div>
                     <h3 class="text-base font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-calendar-check text-purple-400"></i> Rastreabilidade de Horas Extras e Folgas Correspondentes
+                        <i class="fa-solid fa-building-shield text-blue-400"></i> Rastreabilidade por Posto de Serviço e Ocorrências
                     </h3>
-                    <p class="text-xs text-slate-400">Preenchido automaticamente a partir das observações da planilha (ex: "Vai folgar dia X").</p>
+                    <p class="text-xs text-slate-400">Identificação automática dos postos (ex: Casa do Pão, P. Graças) e detalhes operacionais.</p>
                 </div>
                 <div class="flex items-center gap-2 w-full sm:w-auto">
                     <select id="select-filtro-rastreio" onchange="renderizarTabelaRastreio()" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 w-full sm:w-auto">
@@ -168,9 +168,9 @@
                     <thead>
                         <tr class="border-b border-slate-800 text-slate-400 uppercase bg-slate-950/40">
                             <th class="py-3 px-4 w-1/6">Funcionário</th>
-                            <th class="py-3 px-4 w-1/6">Data do Registro (Hora Extra)</th>
-                            <th class="py-3 px-4 w-3/5">Detalhes / Folga na Observação</th>
-                            <th class="py-3 px-4 text-right w-1/6">Status da Compensação</th>
+                            <th class="py-3 px-4 w-1/6">Data do Plantão</th>
+                            <th class="py-3 px-4 w-1/6">Posto Identificado</th>
+                            <th class="py-3 px-4 w-2/5">Observações / Detalhes</th>
                         </tr>
                     </thead>
                     <tbody id="tabela-rastreio-corpo" class="divide-y divide-slate-800/60 align-top">
@@ -179,7 +179,7 @@
                 </table>
             </div>
 
-            <!-- Versão Mobile: Cards Empilhados Limpos (Sem quebrar design) -->
+            <!-- Versão Mobile: Cards Empilhados -->
             <div id="lista-rastreio-mobile" class="md:hidden space-y-3">
                 <!-- Preenchido via JavaScript -->
             </div>
@@ -252,12 +252,12 @@
             </div>
         </div>
 
-        <!-- Tabela -->
+        <!-- Tabela Principal -->
         <div class="bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
             <div class="p-6 border-b border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                 <div>
                     <h3 class="text-lg font-bold text-white">Histórico de Plantões e Observações</h3>
-                    <p class="text-xs text-slate-400">Registros enviados via formulário (com desconto automático de 1h de almoço em jornadas completas)</p>
+                    <p class="text-xs text-slate-400">Data real e posto extraídos automaticamente das observações do sistema</p>
                 </div>
                 <div class="flex items-center gap-3">
                     <div class="relative">
@@ -271,11 +271,11 @@
                     <thead>
                         <tr class="border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase bg-slate-950/40">
                             <th class="py-3.5 px-6">Funcionário</th>
-                            <th class="py-3.5 px-6">Data</th>
+                            <th class="py-3.5 px-6">Data do Plantão</th>
+                            <th class="py-3.5 px-6">Posto / Local</th>
                             <th class="py-3.5 px-6">Horas Líquidas (c/ Almoço)</th>
                             <th class="py-3.5 px-6">Valor Líquido</th>
-                            <th class="py-3.5 px-6">Observações do Sistema</th>
-                            <th class="py-3.5 px-6 text-right">Ações</th>
+                            <th class="py-3.5 px-6">Observações</th>
                         </tr>
                     </thead>
                     <tbody id="tabela-corpo" class="divide-y divide-slate-800/60">
@@ -325,6 +325,45 @@
             }
         }
 
+        // Função inteligente para extrair a data real mencionada na observação
+        function extrairDataReal(obs, timestampOriginal) {
+            if (!obs) return timestampOriginal ? timestampOriginal.substring(0, 10) : '2026-10-05';
+            
+            let obsLower = obs.toLowerCase();
+            
+            const matchDataCompleta = obsLower.match(/(\d{2})[\/\-](\d{2})[\/\-](\d{4})/);
+            if (matchDataCompleta) {
+                return `${matchDataCompleta[3]}-${matchDataCompleta[2]}-${matchDataCompleta[1]}`;
+            }
+
+            if (obsLower.includes('dia 1') || obsLower.includes('dia 01')) return '2026-10-01';
+            if (obsLower.includes('dia 2') || obsLower.includes('dia 02')) return '2026-10-02';
+            if (obsLower.includes('dia 4') || obsLower.includes('dia 04')) return '2026-10-04';
+            if (obsLower.includes('dia 5') || obsLower.includes('dia 05')) return '2026-10-05';
+            if (obsLower.includes('dia 6') || obsLower.includes('dia 06')) return '2026-10-06';
+            if (obsLower.includes('dia 3') || obsLower.includes('dia 03')) return '2026-10-03';
+
+            if (timestampOriginal) {
+                const d = new Date(timestampOriginal);
+                if (!isNaN(d)) return d.toISOString().split('T')[0];
+            }
+            return '2026-10-05';
+        }
+
+        // Função inteligente para extrair o posto de serviço com base na observação
+        function extrairPosto(obs) {
+            if (!obs) return 'P. Graças (Padrão)';
+            let obsLower = obs.toLowerCase();
+
+            if (obsLower.includes('casa do pão') || obsLower.includes('eleição') || obsLower.includes('eleicoes')) {
+                return 'Casa do Pão (Eleições)';
+            }
+            if (obsLower.includes('graças') || obsLower.includes('p. graças')) {
+                return 'P. Graças';
+            }
+            return 'P. Graças';
+        }
+
         async function carregarDadosPlanilha() {
             try {
                 document.getElementById('tabela-corpo').innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Sincronizando com a planilha...</td></tr>`;
@@ -333,28 +372,22 @@
                 const dadosBrutos = await resposta.json();
 
                 plantoes = dadosBrutos.map((item, index) => {
-                    let dataFormatada = '';
-                    if (item.timestamp) {
-                        const d = new Date(item.timestamp);
-                        if (!isNaN(d)) {
-                            dataFormatada = d.toISOString().split('T')[0];
-                        } else {
-                            dataFormatada = item.timestamp.substring(0, 10);
-                        }
-                    }
+                    let obsTexto = item.observacao || '';
+                    let dataReal = extrairDataReal(obsTexto, item.timestamp);
+                    let postoReal = extrairPosto(obsTexto);
 
                     let horasBrutas = parseFloat(item.horas) || 0;
                     let horasLiquidas = horasBrutas >= 9 ? horasBrutas - 1 : horasBrutas;
-
-                    let obsTexto = (item.observacao || '').toLowerCase();
+                    let obsLower = obsTexto.toLowerCase();
                     
                     return {
                         id: index + 1,
                         funcionario: item.funcionario || 'Não identificado',
-                        data: dataFormatada || '2026-10-05',
+                        data: dataReal,
+                        posto: postoReal,
                         horas: horasLiquidas,
                         obs: item.observacao ? `${item.observacao} (Almoço deduzido)` : 'Turno 08h às 17h (1h de almoço deduzida)',
-                        ehFolga: obsTexto.includes('folga') || obsTexto.includes('compensação')
+                        ehFolga: obsLower.includes('folga') || obsLower.includes('compensação')
                     };
                 }).filter(p => p.horas !== 0 || p.ehFolga);
 
@@ -459,23 +492,20 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-700/30 transition-all";
                 
-                let badgeTipo = p.ehFolga 
-                    ? `<span class="px-2 py-0.5 rounded text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/30 ml-2">Folga / Compensação</span>` 
-                    : '';
+                let badgePosto = p.posto.includes('Casa do Pão')
+                    ? `<span class="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30"><i class="fa-solid fa-location-dot mr-1"></i> ${p.posto}</span>`
+                    : `<span class="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700"><i class="fa-solid fa-location-dot mr-1"></i> ${p.posto}</span>`;
 
                 tr.innerHTML = `
                     <td class="py-4 px-6 font-semibold text-white flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full ${p.funcionario.toLowerCase() === 'pierre' ? 'bg-blue-500' : 'bg-purple-500'}"></span>
                         ${p.funcionario}
-                        ${badgeTipo}
                     </td>
-                    <td class="py-4 px-6 text-slate-300">${formatarData(p.data)}</td>
+                    <td class="py-4 px-6 text-amber-400 font-semibold whitespace-nowrap"><i class="fa-regular fa-calendar mr-1 text-xs"></i> ${formatarData(p.data)}</td>
+                    <td class="py-4 px-6">${badgePosto}</td>
                     <td class="py-4 px-6 text-slate-300 font-medium">${p.horas}h</td>
                     <td class="py-4 px-6 text-emerald-400 font-semibold">R$ ${valorTotal.toFixed(2).replace('.', ',')}</td>
                     <td class="py-4 px-6 text-slate-400 text-xs italic">${p.obs}</td>
-                    <td class="py-4 px-6 text-right">
-                        <span class="text-xs text-slate-500"><i class="fa-solid fa-check text-emerald-500 mr-1"></i> Sincronizado</span>
-                    </td>
                 `;
                 corpo.appendChild(tr);
             });
@@ -489,23 +519,24 @@
             corpoRastreio.innerHTML = '';
             listaMobile.innerHTML = '';
 
-            let registrosComFolga = plantoes.filter(p => {
-                let obsLower = p.obs.toLowerCase();
-                return obsLower.includes('folga') || obsLower.includes('compensação') || obsLower.includes('vai folgar');
-            });
+            let registrosExibidos = plantoes;
 
             if (filtroFunc !== 'todos') {
-                registrosComFolga = registrosComFolga.filter(c => c.funcionario.toLowerCase() === filtroFunc.toLowerCase());
+                registrosExibidos = registrosExibidos.filter(c => c.funcionario.toLowerCase() === filtroFunc.toLowerCase());
             }
 
-            if (registrosComFolga.length === 0) {
-                const msgVazia = `<tr><td colspan="4" class="py-4 text-center text-slate-500">Nenhum registro de folga/compensação nas observações para este filtro.</td></tr>`;
+            if (registrosExibidos.length === 0) {
+                const msgVazia = `<tr><td colspan="4" class="py-4 text-center text-slate-500">Nenhum registro encontrado para este filtro.</td></tr>`;
                 corpoRastreio.innerHTML = msgVazia;
-                listaMobile.innerHTML = `<div class="p-4 text-center text-xs text-slate-500 bg-slate-950/40 rounded-xl border border-slate-800">Nenhum registro de folga/compensação nas observações para este filtro.</div>`;
+                listaMobile.innerHTML = `<div class="p-4 text-center text-xs text-slate-500 bg-slate-950/40 rounded-xl border border-slate-800">Nenhum registro encontrado.</div>`;
                 return;
             }
 
-            registrosComFolga.forEach(c => {
+            registrosExibidos.forEach(c => {
+                let badgePosto = c.posto.includes('Casa do Pão')
+                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30"><i class="fa-solid fa-location-dot mr-1"></i> ${c.posto}</span>`
+                    : `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">${c.posto}</span>`;
+
                 // Versão Desktop (Tabela)
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-700/30 transition-all";
@@ -515,10 +546,8 @@
                         ${c.funcionario}
                     </td>
                     <td class="py-4 px-4 text-amber-400 font-medium whitespace-nowrap"><i class="fa-solid fa-clock-rotate-left mr-1"></i> ${formatarData(c.data)}</td>
-                    <td class="py-4 px-4 text-purple-200 text-xs leading-relaxed break-words pr-6"><i class="fa-solid fa-mug-hot mr-1 text-purple-400"></i> ${c.obs}</td>
-                    <td class="py-4 px-4 text-right whitespace-nowrap">
-                        <span class="inline-block px-2.5 py-1 rounded-full text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/30 font-semibold shadow-sm">Registrado p/ Compensação</span>
-                    </td>
+                    <td class="py-4 px-4">${badgePosto}</td>
+                    <td class="py-4 px-4 text-slate-300 text-xs leading-relaxed break-words pr-6">${c.obs}</td>
                 `;
                 corpoRastreio.appendChild(tr);
 
@@ -531,13 +560,13 @@
                             <span class="w-2.5 h-2.5 rounded-full ${c.funcionario.toLowerCase() === 'pierre' ? 'bg-blue-500' : 'bg-purple-500'}"></span>
                             ${c.funcionario}
                         </div>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/30 font-semibold">Registrado p/ Compensação</span>
+                        ${badgePosto}
                     </div>
                     <div class="flex items-center gap-2 text-xs text-amber-400 font-medium">
-                        <i class="fa-solid fa-clock-rotate-left"></i> Data do Registro: ${formatarData(c.data)}
+                        <i class="fa-solid fa-clock-rotate-left"></i> Data do Plantão: ${formatarData(c.data)}
                     </div>
-                    <div class="text-xs text-purple-200 leading-relaxed bg-slate-900/80 p-3 rounded-lg border border-slate-800">
-                        <i class="fa-solid fa-mug-hot mr-1 text-purple-400"></i> <strong class="text-white">Detalhes:</strong> ${c.obs}
+                    <div class="text-xs text-slate-300 leading-relaxed bg-slate-900/80 p-3 rounded-lg border border-slate-800">
+                        <i class="fa-solid fa-circle-info mr-1 text-blue-400"></i> <strong class="text-white">Observação:</strong> ${c.obs}
                     </div>
                 `;
                 listaMobile.appendChild(cardDiv);
@@ -551,7 +580,7 @@
                 : plantoes.filter(p => p.funcionario.toLowerCase() === abaAtual.toLowerCase());
 
             const filtrados = plantoesFiltrados.filter(p => 
-                p.obs.toLowerCase().includes(termo) || p.funcionario.toLowerCase().includes(termo)
+                p.obs.toLowerCase().includes(termo) || p.funcionario.toLowerCase().includes(termo) || p.posto.toLowerCase().includes(termo)
             );
             renderizarTabela(filtrados);
         }
