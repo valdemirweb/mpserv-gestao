@@ -25,7 +25,7 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col">
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
 
     <!-- Tela de Bloqueio por Senha -->
     <div id="modal-senha" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
@@ -34,12 +34,12 @@
                 <i class="fa-solid fa-lock"></i>
             </div>
             <div>
-                <h2 class="text-xl font-bold text-white">Acesso Restrito - MPServ</h2>
+                <h2 class="text-xl font-bold text-white tracking-wide">Acesso Restrito - MPServ</h2>
                 <p class="text-xs text-slate-400 mt-1">Insira a senha de administração para visualizar o painel.</p>
             </div>
             <div class="space-y-3">
-                <input type="password" id="input-senha" placeholder="Digite a senha..." onkeypress="if(event.key === 'Enter') verificarSenha()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 text-center tracking-widest">
-                <button onclick="verificarSenha()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-xl text-sm transition-all shadow-md">
+                <input type="password" id="input-senha" placeholder="Digite a senha..." onkeypress="if(event.key === 'Enter') verificarSenha()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 text-center tracking-widest transition-all">
+                <button onclick="verificarSenha()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-xl text-sm transition-all shadow-lg shadow-blue-600/20">
                     Entrar no Painel
                 </button>
             </div>
@@ -48,23 +48,23 @@
     </div>
 
     <!-- Header / Navbar -->
-    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-30 shadow-lg">
+    <header class="bg-slate-900/90 border-b border-slate-800 sticky top-0 z-30 backdrop-blur-md shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="bg-blue-600/20 border border-blue-500/30 p-2.5 rounded-xl text-blue-400">
+                <div class="bg-blue-600/20 border border-blue-500/30 p-2.5 rounded-xl text-blue-400 shadow-inner">
                     <i class="fa-solid fa-shield-halved text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold text-white tracking-wide">MPServ Gestão à Vista</h1>
+                    <h1 class="text-base sm:text-lg font-bold text-white tracking-wide">MPServ Gestão à Vista</h1>
                     <p class="text-xs text-slate-400">Controle Operacional (Jornada 08h às 17h c/ Almoço)</p>
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <button onclick="carregarDadosPlanilha()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-sm font-semibold transition-all border border-slate-700 flex items-center gap-2">
-                    <i class="fa-solid fa-rotate"></i> Atualizar Dados
+                <button onclick="carregarDadosPlanilha()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all border border-slate-700 flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-rotate"></i> <span class="hidden sm:inline">Atualizar Dados</span>
                 </button>
-                <div class="hidden sm:flex flex-col text-right">
-                    <span class="text-xs text-slate-400">Base Operacional</span>
+                <div class="hidden md:flex flex-col text-right">
+                    <span class="text-[11px] text-slate-400">Base Operacional</span>
                     <span class="text-sm font-bold text-emerald-400">R$ 7,37 / hora</span>
                 </div>
             </div>
@@ -75,31 +75,31 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full space-y-8">
 
         <!-- Abas de Seleção de Funcionários -->
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-slate-900/60 p-2 rounded-2xl border border-slate-800 backdrop-blur-md">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-slate-900/60 p-2 rounded-2xl border border-slate-800 backdrop-blur-md shadow-lg">
             <div class="flex items-center gap-1.5 w-full sm:w-auto">
-                <button id="btn-geral" onclick="mudarAba('geral')" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-sm font-semibold transition-all bg-blue-600 text-white shadow-md">
+                <button id="btn-geral" onclick="mudarAba('geral')" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-blue-600 text-white shadow-md">
                     Visão Geral
                 </button>
-                <button id="btn-Pierre" onclick="mudarAba('Pierre')" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-700/50">
+                <button id="btn-Pierre" onclick="mudarAba('Pierre')" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
                     Pierre
                 </button>
-                <button id="btn-Jefferson" onclick="mudarAba('Jefferson')" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-700/50">
+                <button id="btn-Jefferson" onclick="mudarAba('Jefferson')" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
                     Jefferson
                 </button>
             </div>
-            <div class="px-4 py-2 text-xs text-slate-400 flex items-center gap-2">
+            <div class="px-4 py-2 text-xs text-slate-400 flex items-center justify-center sm:justify-start gap-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                Sincronizado com Google Sheets (Desconto 1h Almoço Aplicado)
+                Sincronizado com Google Sheets
             </div>
         </div>
 
         <!-- Cards de Resumo -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Card Horas -->
-            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 relative overflow-hidden shadow-xl">
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 relative overflow-hidden shadow-xl hover:border-slate-700 transition-all">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-400">Total de Horas Líquidas</p>
+                        <p class="text-xs sm:text-sm font-medium text-slate-400">Total de Horas Líquidas</p>
                         <h3 id="card-total-horas" class="text-3xl font-extrabold text-white mt-1">0h</h3>
                     </div>
                     <div class="bg-blue-500/10 p-3 rounded-xl text-blue-400 border border-blue-500/20 flex items-center justify-center w-12 h-12">
@@ -107,15 +107,15 @@
                     </div>
                 </div>
                 <div class="mt-4 flex items-center gap-2 text-xs text-slate-400">
-                    <span class="text-blue-400 font-semibold" id="card-total-plantoes">0</span> plantões válidos (já descontado 1h de almoço)
+                    <span class="text-blue-400 font-semibold" id="card-total-plantoes">0</span> plantões válidos (desc. 1h almoço)
                 </div>
             </div>
 
             <!-- Card Custo / Valor -->
-            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 relative overflow-hidden shadow-xl">
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 relative overflow-hidden shadow-xl hover:border-slate-700 transition-all">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-400">Valor Acumulado</p>
+                        <p class="text-xs sm:text-sm font-medium text-slate-400">Valor Acumulado</p>
                         <h3 id="card-total-custo" class="text-3xl font-extrabold text-emerald-400 mt-1">R$ 0,00</h3>
                     </div>
                     <div class="bg-emerald-500/10 p-3 rounded-xl text-emerald-400 border border-emerald-500/20 flex items-center justify-center w-12 h-12">
@@ -128,10 +128,10 @@
             </div>
 
             <!-- Card Limite Semanal (44h) -->
-            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 relative overflow-hidden shadow-xl">
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 relative overflow-hidden shadow-xl hover:border-slate-700 transition-all">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-400">Status Teto Semanal (44h)</p>
+                        <p class="text-xs sm:text-sm font-medium text-slate-400">Status Teto Semanal (44h)</p>
                         <h3 id="card-status-limite" class="text-xl font-bold text-emerald-400 mt-1">Dentro do Limite</h3>
                     </div>
                     <div id="card-status-icon" class="bg-emerald-500/10 p-3 rounded-xl text-emerald-400 border border-emerald-500/20 flex items-center justify-center w-12 h-12">
@@ -139,7 +139,7 @@
                     </div>
                 </div>
                 <div class="mt-4 text-xs text-slate-400" id="card-status-desc">
-                    Jornada de 08h às 17h (8h líquidas/dia)
+                    Jornada padrão de 8h líquidas/dia
                 </div>
             </div>
         </div>
@@ -148,13 +148,13 @@
         <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
                 <div>
-                    <h3 class="text-base font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-building-shield text-blue-400"></i> Rastreabilidade por Posto de Serviço e Ocorrências
+                    <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-building-shield text-blue-400"></i> Rastreabilidade por Posto de Serviço
                     </h3>
-                    <p class="text-xs text-slate-400">Identificação automática dos postos (ex: Casa do Pão, P. Graças) e detalhes operacionais.</p>
+                    <p class="text-xs text-slate-400">Identificação automática dos postos e ocorrências operacionais.</p>
                 </div>
                 <div class="flex items-center gap-2 w-full sm:w-auto">
-                    <select id="select-filtro-rastreio" onchange="renderizarTabelaRastreio()" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 w-full sm:w-auto">
+                    <select id="select-filtro-rastreio" onchange="renderizarTabelaRastreio()" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 w-full sm:w-auto shadow-inner">
                         <option value="todos">Todos os Funcionários</option>
                         <option value="Pierre">Pierre</option>
                         <option value="Jefferson">Jefferson</option>
@@ -162,15 +162,15 @@
                 </div>
             </div>
 
-            <!-- Versão Desktop: Tabela Tradicional com Largura Proporcional -->
+            <!-- Versão Desktop: Tabela Tradicional -->
             <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-left border-collapse text-xs table-fixed">
                     <thead>
-                        <tr class="border-b border-slate-800 text-slate-400 uppercase bg-slate-950/40">
+                        <tr class="border-b border-slate-800 text-slate-400 uppercase bg-slate-950/40 tracking-wider">
                             <th class="py-3 px-4 w-1/6">Funcionário</th>
                             <th class="py-3 px-4 w-1/6">Data do Plantão</th>
                             <th class="py-3 px-4 w-1/6">Posto Identificado</th>
-                            <th class="py-3 px-4 w-3/5">Observações / Detalhes</th>
+                            <th class="py-3 px-4 w-3/5">Detalhes / Observações</th>
                         </tr>
                     </thead>
                     <tbody id="tabela-rastreio-corpo" class="divide-y divide-slate-800/60 align-top">
@@ -190,12 +190,12 @@
             <div class="lg:col-span-2 bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
                             <i class="fa-solid fa-chart-line text-blue-400"></i> Monitoramento da Carga Horária Semanal
                         </h3>
                         <span id="badge-semana-status" class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Normal</span>
                     </div>
-                    <p class="text-sm text-slate-400 mb-6">Acompanhamento do teto de 44h semanais considerando o horário padrão de 08h às 17h (com 1h de almoço deduzida).</p>
+                    <p class="text-xs sm:text-sm text-slate-400 mb-6">Acompanhamento do teto de 44h semanais considerando o horário padrão de 08h às 17h (com 1h de almoço deduzida).</p>
                     
                     <div class="space-y-2">
                         <div class="flex justify-between text-xs font-semibold text-slate-300">
@@ -203,7 +203,7 @@
                             <span id="texto-progresso-horas">0h / 44h</span>
                             <span>44h (Teto)</span>
                         </div>
-                        <div class="w-full bg-slate-800 h-4 rounded-full overflow-hidden p-0.5 border border-slate-700/50">
+                        <div class="w-full bg-slate-800 h-3.5 rounded-full overflow-hidden p-0.5 border border-slate-700/50 shadow-inner">
                             <div id="barra-progresso" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
                         </div>
                     </div>
@@ -214,7 +214,7 @@
                         <i class="fa-solid fa-circle-check"></i>
                     </div>
                     <div>
-                        <h4 id="alerta-excedente-titulo" class="text-sm font-bold text-white">Jornada Regular</h4>
+                        <h4 id="alerta-excedente-titulo" class="text-xs sm:text-sm font-bold text-white">Jornada Regular</h4>
                         <p id="alerta-excedente-texto" class="text-xs text-slate-300 mt-0.5">O funcionário está cumprindo as horas dentro do teto semanal permitido por lei.</p>
                     </div>
                 </div>
@@ -223,30 +223,30 @@
             <!-- Painel de Tomada de Decisão -->
             <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
                 <div>
-                    <h3 class="text-base font-bold text-white flex items-center gap-2 mb-2">
+                    <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-2 mb-2">
                         <i class="fa-solid fa-scale-balanced text-purple-400"></i> Decisão de Acerto
                     </h3>
-                    <p class="text-xs text-slate-400 mb-4">Caso haja horas líquidas excedentes, defina como deseja proceder com o funcionário:</p>
+                    <p class="text-xs text-slate-400 mb-4">Caso haja horas líquidas excedentes, defina como deseja proceder:</p>
                     
                     <div class="space-y-3">
                         <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 cursor-pointer hover:bg-slate-800 transition-all">
                             <input type="radio" name="decisao" value="Pagar em Dinheiro" checked class="text-blue-600 focus:ring-blue-500 h-4 w-4">
                             <div class="text-xs">
                                 <span class="font-bold text-white block">Pagar em Dinheiro</span>
-                                <span class="text-slate-400">Adicionar ao acerto financeiro do mês</span>
+                                <span class="text-slate-400">Adicionar ao acerto do mês</span>
                             </div>
                         </label>
                         <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 cursor-pointer hover:bg-slate-800 transition-all">
                             <input type="radio" name="decisao" value="Banco de Horas / Folga" class="text-blue-600 focus:ring-blue-500 h-4 w-4">
                             <div class="text-xs">
                                 <span class="font-bold text-white block">Banco de Horas / Folga</span>
-                                <span class="text-slate-400">Compensar com descanso remunerado</span>
+                                <span class="text-slate-400">Compensar com descanso</span>
                             </div>
                         </label>
                     </div>
                 </div>
 
-                <button onclick="salvarDecisaoGestor()" class="mt-6 w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-xl text-xs transition-all border border-blue-500 shadow-md flex items-center justify-center gap-2">
+                <button onclick="salvarDecisaoGestor()" class="mt-6 w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-xl text-xs transition-all border border-blue-500/50 shadow-md flex items-center justify-center gap-2">
                     <i class="fa-solid fa-check"></i> Aplicar Decisão
                 </button>
             </div>
@@ -256,24 +256,24 @@
         <div class="bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
             <div class="p-6 border-b border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                 <div>
-                    <h3 class="text-lg font-bold text-white">Histórico de Plantões e Observações</h3>
-                    <p class="text-xs text-slate-400">Lê diretamente a coluna "Data do Plantão" da sua planilha</p>
+                    <h3 class="text-base sm:text-lg font-bold text-white">Histórico de Plantões e Observações</h3>
+                    <p class="text-xs text-slate-400">Listagem detalhada sincronizada com a planilha oficial</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <div class="relative">
+                    <div class="relative w-full sm:w-auto">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-500 text-sm"></i>
-                        <input type="text" id="filtro-busca" onkeyup="filtrarTabela()" placeholder="Buscar nas observações..." class="bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 w-full sm:w-64 transition-all">
+                        <input type="text" id="filtro-busca" onkeyup="filtrarTabela()" placeholder="Buscar nas observações..." class="bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 w-full sm:w-64 transition-all shadow-inner">
                     </div>
                 </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-sm table-fixed">
                     <thead>
-                        <tr class="border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase bg-slate-950/40">
+                        <tr class="border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase bg-slate-950/40 tracking-wider">
                             <th class="py-3.5 px-4 w-28">Funcionário</th>
                             <th class="py-3.5 px-4 w-32">Data do Plantão</th>
-                            <th class="py-3.5 px-4 w-44">Posto / Local</th>
-                            <th class="py-3.5 px-4 w-24">Horas Líq.</th>
+                            <th class="py-3.5 px-4 w-40">Posto</th>
+                            <th class="py-3.5 px-4 w-20">Horas</th>
                             <th class="py-3.5 px-4 w-28">Valor</th>
                             <th class="py-3.5 px-4 w-auto">Observações</th>
                         </tr>
@@ -325,30 +325,13 @@
             }
         }
 
-        // Função robusta para capturar a data da planilha independentemente do nome exato da propriedade enviada
         function extrairDataPlanilha(item) {
             let valorData = item.data || item.dataPlantao || item['Data do Plantão:'] || item.data_plantao;
-            
             if (valorData) {
                 let strData = String(valorData).trim();
-                // Se vier no formato ISO com hora (ex: 2026-10-01T00:00:00.000Z)
-                if (strData.includes('T')) {
-                    return strData.split('T')[0];
-                }
-                // Se já estiver YYYY-MM-DD ou DD/MM/YYYY
+                if (strData.includes('T')) return strData.split('T')[0];
                 return strData;
             }
-
-            // Fallback para tentar extrair da observação caso a coluna venha vazia
-            let obs = (item.observacao || '').toLowerCase();
-            if (obs.includes('dia 1') || obs.includes('dia 01')) return '2026-10-01';
-            if (obs.includes('dia 2') || obs.includes('dia 02')) return '2026-10-02';
-            if (obs.includes('dia 3') || obs.includes('dia 03')) return '2026-10-03';
-            if (obs.includes('dia 4') || obs.includes('dia 04')) return '2026-10-04';
-            if (obs.includes('dia 5') || obs.includes('dia 05')) return '2026-10-05';
-            if (obs.includes('dia 6') || obs.includes('dia 06')) return '2026-10-06';
-            if (obs.includes('dia 7') || obs.includes('dia 07')) return '2026-10-07';
-
             if (item.timestamp) {
                 const d = new Date(item.timestamp);
                 if (!isNaN(d)) return d.toISOString().split('T')[0];
@@ -359,7 +342,6 @@
         function extrairPosto(obs) {
             if (!obs) return 'P. Graças';
             let obsLower = obs.toLowerCase();
-
             if (obsLower.includes('casa do pão') || obsLower.includes('eleição') || obsLower.includes('eleicoes')) {
                 return 'Casa do Pão (Eleição)';
             }
@@ -391,7 +373,7 @@
                         data: dataReal,
                         posto: postoReal,
                         horas: horasLiquidas,
-                        obs: item.observacao ? `${item.observacao} (Almoço deduzido)` : 'Turno 08h às 17h (1h de almoço deduzida)',
+                        obsOriginal: item.observacao || 'Turno 08h às 17h (1h de almoço deduzida)',
                         ehFolga: obsLower.includes('folga') || obsLower.includes('compensação')
                     };
                 }).filter(p => p.horas !== 0 || p.ehFolga);
@@ -408,9 +390,9 @@
             ['geral', 'Pierre', 'Jefferson'].forEach(f => {
                 const btn = document.getElementById(`btn-${f}`);
                 if (f === funcionario) {
-                    btn.className = "flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-sm font-semibold transition-all bg-blue-600 text-white shadow-md";
+                    btn.className = "flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-blue-600 text-white shadow-md";
                 } else {
-                    btn.className = "flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-700/50";
+                    btn.className = "flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60";
                 }
             });
             document.getElementById('select-filtro-rastreio').value = funcionario === 'geral' ? 'todos' : funcionario;
@@ -495,11 +477,14 @@
             dados.forEach(p => {
                 const valorTotal = p.horas * VALOR_HORA;
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-700/30 transition-all";
+                tr.className = "hover:bg-slate-800/40 transition-all";
                 
                 let badgePosto = p.posto.includes('Casa do Pão')
-                    ? `<span class="inline-block px-2 py-1 rounded text-[10px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30 break-words"><i class="fa-solid fa-location-dot mr-1"></i> ${p.posto}</span>`
-                    : `<span class="inline-block px-2 py-1 rounded text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700"><i class="fa-solid fa-location-dot mr-1"></i> ${p.posto}</span>`;
+                    ? `<span class="inline-block px-2.5 py-1 rounded-md text-[10px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30"><i class="fa-solid fa-location-dot mr-1"></i> ${p.posto}</span>`
+                    : `<span class="inline-block px-2.5 py-1 rounded-md text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700"><i class="fa-solid fa-location-dot mr-1"></i> ${p.posto}</span>`;
+
+                // Limita a observação a 45 caracteres com tooltip nativo (title) para ver o texto completo ao passar o mouse
+                let obsCurta = p.obsOriginal.length > 45 ? p.obsOriginal.substring(0, 45) + '...' : p.obsOriginal;
 
                 tr.innerHTML = `
                     <td class="py-4 px-4 font-semibold text-white truncate">
@@ -512,7 +497,9 @@
                     <td class="py-4 px-4">${badgePosto}</td>
                     <td class="py-4 px-4 text-slate-300 font-medium whitespace-nowrap">${p.horas}h</td>
                     <td class="py-4 px-4 text-emerald-400 font-semibold whitespace-nowrap">R$ ${valorTotal.toFixed(2).replace('.', ',')}</td>
-                    <td class="py-4 px-4 text-slate-400 text-xs italic break-words leading-relaxed">${p.obs}</td>
+                    <td class="py-4 px-4 text-slate-300 text-xs leading-relaxed truncate" title="${p.obsOriginal}">
+                        ${obsCurta}
+                    </td>
                 `;
                 corpo.appendChild(tr);
             });
@@ -541,12 +528,14 @@
 
             registrosExibidos.forEach(c => {
                 let badgePosto = c.posto.includes('Casa do Pão')
-                    ? `<span class="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30"><i class="fa-solid fa-location-dot mr-1"></i> ${c.posto}</span>`
-                    : `<span class="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">${c.posto}</span>`;
+                    ? `<span class="inline-block px-2.5 py-1 rounded-md text-[10px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30"><i class="fa-solid fa-location-dot mr-1"></i> ${c.posto}</span>`
+                    : `<span class="inline-block px-2.5 py-1 rounded-md text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">${c.posto}</span>`;
 
-                // Versão Desktop (Tabela Fixa)
+                let obsCurta = c.obsOriginal.length > 50 ? c.obsOriginal.substring(0, 50) + '...' : c.obsOriginal;
+
+                // Versão Desktop (Tabela)
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-700/30 transition-all";
+                tr.className = "hover:bg-slate-800/40 transition-all";
                 tr.innerHTML = `
                     <td class="py-4 px-4 font-semibold text-white truncate">
                         <div class="flex items-center gap-2">
@@ -556,7 +545,9 @@
                     </td>
                     <td class="py-4 px-4 text-amber-400 font-medium whitespace-nowrap"><i class="fa-solid fa-clock-rotate-left mr-1"></i> ${formatarData(c.data)}</td>
                     <td class="py-4 px-4">${badgePosto}</td>
-                    <td class="py-4 px-4 text-slate-300 text-xs leading-relaxed break-words">${c.obs}</td>
+                    <td class="py-4 px-4 text-slate-300 text-xs leading-relaxed truncate" title="${c.obsOriginal}">
+                        ${obsCurta}
+                    </td>
                 `;
                 corpoRastreio.appendChild(tr);
 
@@ -575,7 +566,7 @@
                         <i class="fa-solid fa-clock-rotate-left"></i> Data do Plantão: ${formatarData(c.data)}
                     </div>
                     <div class="text-xs text-slate-300 leading-relaxed bg-slate-900/80 p-3 rounded-lg border border-slate-800 break-words">
-                        <i class="fa-solid fa-circle-info mr-1 text-blue-400"></i> <strong class="text-white">Observação:</strong> ${c.obs}
+                        <i class="fa-solid fa-circle-info mr-1 text-blue-400"></i> ${c.obsOriginal}
                     </div>
                 `;
                 listaMobile.appendChild(cardDiv);
@@ -589,7 +580,7 @@
                 : plantoes.filter(p => p.funcionario.toLowerCase() === abaAtual.toLowerCase());
 
             const filtrados = plantoesFiltrados.filter(p => 
-                p.obs.toLowerCase().includes(termo) || p.funcionario.toLowerCase().includes(termo) || p.posto.toLowerCase().includes(termo)
+                p.obsOriginal.toLowerCase().includes(termo) || p.funcionario.toLowerCase().includes(termo) || p.posto.toLowerCase().includes(termo)
             );
             renderizarTabela(filtrados);
         }
