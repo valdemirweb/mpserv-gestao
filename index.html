@@ -162,15 +162,15 @@
                 </div>
             </div>
 
-            <!-- Versão Desktop: Tabela Tradicional -->
+            <!-- Versão Desktop: Tabela Tradicional com Largura Proporcional -->
             <div class="hidden md:block overflow-x-auto">
-                <table class="w-full text-left border-collapse text-xs table-auto">
+                <table class="w-full text-left border-collapse text-xs table-fixed">
                     <thead>
                         <tr class="border-b border-slate-800 text-slate-400 uppercase bg-slate-950/40">
                             <th class="py-3 px-4 w-1/6">Funcionário</th>
                             <th class="py-3 px-4 w-1/6">Data do Plantão</th>
                             <th class="py-3 px-4 w-1/6">Posto Identificado</th>
-                            <th class="py-3 px-4 w-2/5">Observações / Detalhes</th>
+                            <th class="py-3 px-4 w-3/5">Observações / Detalhes</th>
                         </tr>
                     </thead>
                     <tbody id="tabela-rastreio-corpo" class="divide-y divide-slate-800/60 align-top">
@@ -252,7 +252,7 @@
             </div>
         </div>
 
-        <!-- Tabela Principal -->
+        <!-- Tabela Principal com Largura Proporcional e Fixa -->
         <div class="bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
             <div class="p-6 border-b border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                 <div>
@@ -267,18 +267,18 @@
                 </div>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-sm">
+                <table class="w-full text-left border-collapse text-sm table-fixed">
                     <thead>
                         <tr class="border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase bg-slate-950/40">
-                            <th class="py-3.5 px-6">Funcionário</th>
-                            <th class="py-3.5 px-6">Data do Plantão</th>
-                            <th class="py-3.5 px-6">Posto / Local</th>
-                            <th class="py-3.5 px-6">Horas Líquidas (c/ Almoço)</th>
-                            <th class="py-3.5 px-6">Valor Líquido</th>
-                            <th class="py-3.5 px-6">Observações</th>
+                            <th class="py-3.5 px-4 w-28">Funcionário</th>
+                            <th class="py-3.5 px-4 w-32">Data do Plantão</th>
+                            <th class="py-3.5 px-4 w-44">Posto / Local</th>
+                            <th class="py-3.5 px-4 w-24">Horas Líq.</th>
+                            <th class="py-3.5 px-4 w-28">Valor</th>
+                            <th class="py-3.5 px-4 w-auto">Observações</th>
                         </tr>
                     </thead>
-                    <tbody id="tabela-corpo" class="divide-y divide-slate-800/60">
+                    <tbody id="tabela-corpo" class="divide-y divide-slate-800/60 align-top">
                         <tr>
                             <td colspan="6" class="py-8 text-center text-slate-500">Carregando dados da planilha...</td>
                         </tr>
@@ -325,7 +325,6 @@
             }
         }
 
-        // Função inteligente para extrair a data real mencionada na observação
         function extrairDataReal(obs, timestampOriginal) {
             if (!obs) return timestampOriginal ? timestampOriginal.substring(0, 10) : '2026-10-05';
             
@@ -350,13 +349,12 @@
             return '2026-10-05';
         }
 
-        // Função inteligente para extrair o posto de serviço com base na observação
         function extrairPosto(obs) {
-            if (!obs) return 'P. Graças (Padrão)';
+            if (!obs) return 'P. Graças';
             let obsLower = obs.toLowerCase();
 
             if (obsLower.includes('casa do pão') || obsLower.includes('eleição') || obsLower.includes('eleicoes')) {
-                return 'Casa do Pão (Eleições)';
+                return 'Casa do Pão (Eleição)';
             }
             if (obsLower.includes('graças') || obsLower.includes('p. graças')) {
                 return 'P. Graças';
@@ -493,19 +491,21 @@
                 tr.className = "hover:bg-slate-700/30 transition-all";
                 
                 let badgePosto = p.posto.includes('Casa do Pão')
-                    ? `<span class="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30"><i class="fa-solid fa-location-dot mr-1"></i> ${p.posto}</span>`
-                    : `<span class="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700"><i class="fa-solid fa-location-dot mr-1"></i> ${p.posto}</span>`;
+                    ? `<span class="inline-block px-2 py-1 rounded text-[10px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30 break-words"><i class="fa-solid fa-location-dot mr-1"></i> ${p.posto}</span>`
+                    : `<span class="inline-block px-2 py-1 rounded text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700"><i class="fa-solid fa-location-dot mr-1"></i> ${p.posto}</span>`;
 
                 tr.innerHTML = `
-                    <td class="py-4 px-6 font-semibold text-white flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full ${p.funcionario.toLowerCase() === 'pierre' ? 'bg-blue-500' : 'bg-purple-500'}"></span>
-                        ${p.funcionario}
+                    <td class="py-4 px-4 font-semibold text-white truncate">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full flex-shrink-0 ${p.funcionario.toLowerCase() === 'pierre' ? 'bg-blue-500' : 'bg-purple-500'}"></span>
+                            <span class="truncate">${p.funcionario}</span>
+                        </div>
                     </td>
-                    <td class="py-4 px-6 text-amber-400 font-semibold whitespace-nowrap"><i class="fa-regular fa-calendar mr-1 text-xs"></i> ${formatarData(p.data)}</td>
-                    <td class="py-4 px-6">${badgePosto}</td>
-                    <td class="py-4 px-6 text-slate-300 font-medium">${p.horas}h</td>
-                    <td class="py-4 px-6 text-emerald-400 font-semibold">R$ ${valorTotal.toFixed(2).replace('.', ',')}</td>
-                    <td class="py-4 px-6 text-slate-400 text-xs italic">${p.obs}</td>
+                    <td class="py-4 px-4 text-amber-400 font-semibold whitespace-nowrap"><i class="fa-regular fa-calendar mr-1 text-xs"></i> ${formatarData(p.data)}</td>
+                    <td class="py-4 px-4">${badgePosto}</td>
+                    <td class="py-4 px-4 text-slate-300 font-medium whitespace-nowrap">${p.horas}h</td>
+                    <td class="py-4 px-4 text-emerald-400 font-semibold whitespace-nowrap">R$ ${valorTotal.toFixed(2).replace('.', ',')}</td>
+                    <td class="py-4 px-4 text-slate-400 text-xs italic break-words leading-relaxed">${p.obs}</td>
                 `;
                 corpo.appendChild(tr);
             });
@@ -534,20 +534,22 @@
 
             registrosExibidos.forEach(c => {
                 let badgePosto = c.posto.includes('Casa do Pão')
-                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30"><i class="fa-solid fa-location-dot mr-1"></i> ${c.posto}</span>`
-                    : `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">${c.posto}</span>`;
+                    ? `<span class="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30"><i class="fa-solid fa-location-dot mr-1"></i> ${c.posto}</span>`
+                    : `<span class="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">${c.posto}</span>`;
 
-                // Versão Desktop (Tabela)
+                // Versão Desktop (Tabela Fixa)
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-700/30 transition-all";
                 tr.innerHTML = `
-                    <td class="py-4 px-4 font-semibold text-white flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full ${c.funcionario.toLowerCase() === 'pierre' ? 'bg-blue-500' : 'bg-purple-500'}"></span>
-                        ${c.funcionario}
+                    <td class="py-4 px-4 font-semibold text-white truncate">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full flex-shrink-0 ${c.funcionario.toLowerCase() === 'pierre' ? 'bg-blue-500' : 'bg-purple-500'}"></span>
+                            <span class="truncate">${c.funcionario}</span>
+                        </div>
                     </td>
                     <td class="py-4 px-4 text-amber-400 font-medium whitespace-nowrap"><i class="fa-solid fa-clock-rotate-left mr-1"></i> ${formatarData(c.data)}</td>
                     <td class="py-4 px-4">${badgePosto}</td>
-                    <td class="py-4 px-4 text-slate-300 text-xs leading-relaxed break-words pr-6">${c.obs}</td>
+                    <td class="py-4 px-4 text-slate-300 text-xs leading-relaxed break-words">${c.obs}</td>
                 `;
                 corpoRastreio.appendChild(tr);
 
@@ -565,7 +567,7 @@
                     <div class="flex items-center gap-2 text-xs text-amber-400 font-medium">
                         <i class="fa-solid fa-clock-rotate-left"></i> Data do Plantão: ${formatarData(c.data)}
                     </div>
-                    <div class="text-xs text-slate-300 leading-relaxed bg-slate-900/80 p-3 rounded-lg border border-slate-800">
+                    <div class="text-xs text-slate-300 leading-relaxed bg-slate-900/80 p-3 rounded-lg border border-slate-800 break-words">
                         <i class="fa-solid fa-circle-info mr-1 text-blue-400"></i> <strong class="text-white">Observação:</strong> ${c.obs}
                     </div>
                 `;
