@@ -325,18 +325,32 @@
             }
         }
 
-        // Pega a data diretamente da coluna "data" enviada pelo Apps Script (coluna B da planilha)
-        function extrairDataPlanilha(dataColunaB, timestampOriginal) {
-            if (dataColunaB) {
-                // Se já vier no formato YYYY-MM-DD ou DD/MM/YYYY
-                let strData = String(dataColunaB).trim();
+        // Função robusta para capturar a data da planilha independentemente do nome exato da propriedade enviada
+        function extrairDataPlanilha(item) {
+            let valorData = item.data || item.dataPlantao || item['Data do Plantão:'] || item.data_plantao;
+            
+            if (valorData) {
+                let strData = String(valorData).trim();
+                // Se vier no formato ISO com hora (ex: 2026-10-01T00:00:00.000Z)
                 if (strData.includes('T')) {
                     return strData.split('T')[0];
                 }
+                // Se já estiver YYYY-MM-DD ou DD/MM/YYYY
                 return strData;
             }
-            if (timestampOriginal) {
-                const d = new Date(timestampOriginal);
+
+            // Fallback para tentar extrair da observação caso a coluna venha vazia
+            let obs = (item.observacao || '').toLowerCase();
+            if (obs.includes('dia 1') || obs.includes('dia 01')) return '2026-10-01';
+            if (obs.includes('dia 2') || obs.includes('dia 02')) return '2026-10-02';
+            if (obs.includes('dia 3') || obs.includes('dia 03')) return '2026-10-03';
+            if (obs.includes('dia 4') || obs.includes('dia 04')) return '2026-10-04';
+            if (obs.includes('dia 5') || obs.includes('dia 05')) return '2026-10-05';
+            if (obs.includes('dia 6') || obs.includes('dia 06')) return '2026-10-06';
+            if (obs.includes('dia 7') || obs.includes('dia 07')) return '2026-10-07';
+
+            if (item.timestamp) {
+                const d = new Date(item.timestamp);
                 if (!isNaN(d)) return d.toISOString().split('T')[0];
             }
             return '2026-10-05';
@@ -364,8 +378,7 @@
 
                 plantoes = dadosBrutos.map((item, index) => {
                     let obsTexto = item.observacao || '';
-                    // Lê diretamente o campo de data enviado pelo Apps Script (Coluna B)
-                    let dataReal = extrairDataPlanilha(item.data, item.timestamp);
+                    let dataReal = extrairDataPlanilha(item);
                     let postoReal = extrairPosto(obsTexto);
 
                     let horasBrutas = parseFloat(item.horas) || 0;
@@ -583,7 +596,6 @@
 
         function formatarData(dataStr) {
             if (!dataStr) return '';
-            // Se vier no formato YYYY-MM-DD
             const partes = dataStr.split('-');
             if (partes.length === 3) {
                 return `${partes[2]}/${partes[1]}/${partes[0]}`;
